@@ -1,2 +1,0 @@
-# elementary operations (+,-,*,/,^)
-# TODO

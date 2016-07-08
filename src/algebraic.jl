@@ -4,7 +4,8 @@
 # including +, -, *, /, and radicals.
 
 using Nemo
-import PolynomialRoots.roots
+import PolynomialRoots
+import PolynomialRoots:roots
 
 # see: http://nemocas.org/nemo-0.3.pdf
 
@@ -13,20 +14,21 @@ import PolynomialRoots.roots
 # an arbitrary-precision approximation of the number,
 # and prec which specifies the minimal distance between roots of p
 # TODO: apprx has to be complex.
-type AlgebraicNumber
-	coeff::Vector{Int64}
-	apprx::Complex{BigFloat}
-	prec::BigFloat
+type AlgebraicNumber{T<:Integer,F<:AbstractFloat}
+	coeff::Vector{T}
+	apprx::Complex{F}
+	prec::F
 end
+
 # algebraic number from just poly and approximation.
 # computes precision and simplifies as well.
-function AlgebraicNumber(coeff::Vector{Int64}, apprx::Complex{BigFloat})
-	an = AlgebraicNumber(coeff, apprx, BigFloat(0.0))
+function AlgebraicNumber{T,F}(coeff::Vector{T}, apprx::Complex{F})
+	an = AlgebraicNumber{T,F}(coeff, apprx, zero(F))
 	calc_precision!(an)
 	return simplify(an)
 end
 # Algebraic number from integer
-AlgebraicNumber(x::Integer) = AlgebraicNumber([-x,1], Complex{BigFloat}(x))
+AlgebraicNumber{T<:Integer}(x::T) = AlgebraicNumber([-x,one(T)], Complex{BigFloat}(x))
 # Algebraic number from rational
 AlgebraicNumber{T<:Integer}(x::Rational{T}) = AlgebraicNumber([-num(x), den(x)], Complex{BigFloat}(x))
 
@@ -46,17 +48,11 @@ function show(io::IO, an::AlgebraicNumber)
 end
 
 #get_coeffs(p::Nemo.fmpz_poly) = pointer_to_array(convert(Ptr{Int64}, p.coeffs), (p.length,))
-get_coeffs(p::Nemo.fmpz_poly) = Int64[Nemo.coeff(p,i) for i=0:degree(p)]
-prec_roots(a::Vector{Int64}) = PolynomialRoots.roots(convert(Array{BigFloat},a))
+get_coeffs(p::Nemo.fmpz_poly) = [BigInt(Nemo.coeff(p,i)) for i=0:Nemo.degree(p)]
+prec_roots{T<:Integer}(a::Vector{T}) = PolynomialRoots.roots(convert(Array{BigFloat},a))
 # TODO: make sure roots returns distinct roots
 
-# compute smallest distance between all pairs of elements in x
-function min_pairwise_dist(x)
-	biginf = convert(BigFloat,Inf)
-	n = length(x)
-	pdists = [i < j ? abs(x[i]-x[j]) : biginf for i=1:n,j=1:n]
-	return minimum(pdists)
-end
+
 
 # # find all roots of a polynomial, with enough precision such that
 # # all distinct roots have distinct floating-point representations
@@ -67,6 +63,14 @@ end
 # to specify it among roots of an.p
 # TODO: handle case of repeated roots precisely
 function calc_precision!(an::AlgebraicNumber)
+	# compute smallest distance between all pairs of elements in x
+	function min_pairwise_dist(x)
+		biginf = convert(BigFloat,Inf)
+		n = length(x)
+		pdists = [i < j ? abs(x[i]-x[j]) : biginf for i=1:n,j=1:n]
+		return minimum(pdists)
+	end
+
 	# first, find all roots of p
 	rts = prec_roots(an.coeff)
 
@@ -88,13 +92,16 @@ end
 # This assumes that calc_precision! has already been called.
 function simplify(an::AlgebraicNumber)
 	# for all factors of an.p, find the one that matches our roots
-	fctrs = keys(Nemo.factor(poly_from_coeff(an.coeff)))
+	R, x = PolynomialRing(ZZ, "x")
+	p = R(map(ZZ, an.coeff))
+	fctrs = keys(Nemo.factor(p))
 
 	# first, trivial case
 	if length(fctrs)==1
 		return AlgebraicNumber(get_coeffs(first(fctrs)),an.apprx,an.prec)
 	end
 	# case where more than one factor exists
+	@show fctrs
 	for fctr in fctrs
 		coeff = get_coeffs(fctr)
 		# TODO: instead of computing roots, substitute apprx and find closest to zero.
@@ -142,13 +149,13 @@ function nthroot(an::AlgebraicNumber,n::Int64)
 	return AlgebraicNumber(interleave(an.coeff, n-1), an.apprx^(1/n))
 end
 
-function pow2(an::AlgebraicNumber)
-	cfs = an.coeff 
-	cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
-	pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
-	p2 = get_coeffs(pp)[1:2:end]
-	return AlgebraicNumber(p2, an.apprx*an.apprx)
-end
+# function pow2(an::AlgebraicNumber)
+# 	cfs = an.coeff 
+# 	cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
+# 	pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
+# 	p2 = get_coeffs(pp)[1:2:end]
+# 	return AlgebraicNumber(p2, an.apprx*an.apprx)
+# end
 
 
 # partially simplify a polynomial b
@@ -157,42 +164,13 @@ reduce_repeated_factors(p::Nemo.fmpz_poly) = prod(keys(Nemo.factor(p)))
 
 # multiplication
 function *(an1::AlgebraicNumber,an2::AlgebraicNumber)
-	# Create polynomial ring over x and z
-	R, z = PolynomialRing(ZZ, "z")
-	S, x = PolynomialRing(R,  "x")
-
-	# make sure an1=/=an2;
-	# otherwise just use pow2
-	if an1==an2
-		return pow2(an1)
-	end 
-
-	# p1 is simply the same as an1.p
-	p1 = (z^0)*sum([an1.coeff[i]*(x^(i-1)) for i=1:length(an1.coeff)])
-	# p2 prime is an2.p[z/x]*x^degree(an2.p)
-	d = length(an2.coeff)
-	p2 = sum([an2.coeff[i]*(z^(i-1))*(x^(d-i+1)) for i=1:length(an2.coeff)])
-	
-	#@show p1, p2
-	p = reduce_repeated_factors(resultant(p1,p2))
-	#g=gcd(p2,p1)
-	#@show "hi"
-	#@show g
-	#@show resultant(p1,p2)
-	return AlgebraicNumber(get_coeffs(p),an1.apprx*an2.apprx)
+	p = composed_product(an1.coeff, an2.coeff)
+	return AlgebraicNumber(p, an1.apprx * an2.apprx)
 end
-function +(an1::AlgebraicNumber,an2::AlgebraicNumber)
-	# Create polynomial ring over x and z
-	R, z = PolynomialRing(ZZ, "z")
-	S, x = PolynomialRing(R,  "x")
-	
-	# p1 is simply the same as an1.p
-	p1 = sum([an1.coeff[i]*(z^0)*(x^(i-1)) for i=1:length(an1.coeff)])
-	# p2 prime is an2.p[z-x]
-	p2 = sum([an2.coeff[i]*(z-x)^(i-1) for i=1:length(an2.coeff)])
 
-	p = reduce_repeated_factors(resultant(p1,p2))
-	return AlgebraicNumber(get_coeffs(p),an1.apprx+an2.apprx)
+function +(an1::AlgebraicNumber,an2::AlgebraicNumber)
+	p = composed_sum(an1.coeff, an2.coeff)
+	return AlgebraicNumber(p, an1.apprx + an2.apprx)
 end
 
 # take roots of a polynomial,
@@ -204,8 +182,8 @@ confirm_algnumber(b) = sum(b.coeff .* [b.apprx^(i-1) for i=1:length(b.coeff)])
 
 function test1(n)
 	coeff = rand(1:10,n+1)
-	a = AlgebraicNumber(coeff, BigFloat(0.0), BigFloat(0.0))
-	a.apprx = roots(a.coeff)[rand(1:n)]
+	a = AlgebraicNumber(coeff, Complex{BigFloat}(0.0), BigFloat(0.0))
+	a.apprx = prec_roots(a.coeff)[rand(1:n)]
 	calc_precision!(a)
 	a = simplify(a)
 	@show a.coeff, convert(Complex{Float64},a.apprx), a.prec
@@ -216,9 +194,6 @@ function test1(n)
 	c = b*b
 	#c = pow2(b)
 	@show c.coeff, convert(Complex{Float64},c.apprx), c.prec
-	@show roots(a.coeff) 
-	@show roots(b.coeff) 
-	@show roots(c.coeff) 	
 end
 
 function test2(n)
