@@ -32,6 +32,15 @@ AlgebraicNumber{T<:Integer}(x::T) = AlgebraicNumber([-x,one(T)], Complex{BigFloa
 # Algebraic number from rational
 AlgebraicNumber{T<:Integer}(x::Rational{T}) = AlgebraicNumber([-num(x), den(x)], Complex{BigFloat}(x))
 
+import Base.convert 
+function convert(::Int64,an::AlgebraicNumber)
+	c = an.coeff
+	if length(c)==2 && abs(c[2])==1
+		return c[1]*c[2]
+	else
+		throw(InexactError())
+	end
+end
 
 function poly_from_coeff(a)
 	R,x=PolynomialRing(ZZ,"x")
@@ -94,26 +103,26 @@ function simplify(an::AlgebraicNumber)
 	# for all factors of an.p, find the one that matches our roots
 	R, x = PolynomialRing(ZZ, "x")
 	p = R(map(ZZ, an.coeff))
-	fctrs = keys(Nemo.factor(p))
+	fctr_dict = Nemo.factor(p)
+	fctrs = keys(fctr_dict)
 
 	# first, trivial case
 	if length(fctrs)==1
-		return AlgebraicNumber(get_coeffs(first(fctrs)),an.apprx,an.prec)
+		# irreducible case
+		if first(values(fctr_dict))==1
+			return AlgebraicNumber(get_coeffs(first(fctrs)),an.apprx,an.prec)
+		end
+		# reducible case
+		an = AlgebraicNumber(get_coeffs(first(fctrs)),an.apprx,an.prec)
+		calc_precision!(an)  # re-calculate precision
+		return an
 	end
 	# case where more than one factor exists
-	@show fctrs
-	for fctr in fctrs
-		coeff = get_coeffs(fctr)
-		# TODO: instead of computing roots, substitute apprx and find closest to zero.
-		fctr_rts = prec_roots(coeff)
-		dists = Bool[abs(an.apprx - r) < an.prec for r in fctr_rts]
-		if any(dists)
-			# we've found our winner!
-			return AlgebraicNumber(coeff,an.apprx,an.prec)
-		end
-	end
-	# should _not_ be at this point!
-	throw(ArgumentError("Precision error!"))
+	mindists = [minimum(abs(an.apprx .- prec_roots(get_coeffs(fctr)))) for fctr in fctrs]
+	(newprec, i) = findmin(mindists)
+	fctr = collect(fctrs)[i]
+	an = AlgebraicNumber(get_coeffs(fctr),an.apprx,newprec)
+	return an 
 end
 
 import Base.==
@@ -121,12 +130,21 @@ import Base.inv
 import Base.^
 import Base.*
 import Base.+
-==(an1::AlgebraicNumber,an2::AlgebraicNumber) = (an1.coeff==an2.coeff) && abs(an1.apprx-an2.apprx)<min(an1.prec,an2.prec)
+import Base.-
+function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
+	cf1 = an1.coeff
+	cf2 = an2.coeff
+	(cf1/cf1[end])==(cf2/cf2[end]) || return false 
+	calc_precision!(an1)
+	calc_precision!(an2)
+	return abs(an1.apprx-an2.apprx)<min(an1.prec,an2.prec)
+end
+
 inv(an::AlgebraicNumber) = AlgebraicNumber(reverse(an.coeff), inv(an.apprx))
 
 # interleave each elemnet of a with n zeros
 interleave(a,n) =  vec(vcat(a',zeros(Int64,n,length(a))))
-function nthroot(an::AlgebraicNumber,n::Int64)
+function root(an::AlgebraicNumber,n::Int64)
 	# # if power is zero, return 1
 	# # TODO: handle case where an.apprx=0.0
 	# if n==0
@@ -148,6 +166,11 @@ function nthroot(an::AlgebraicNumber,n::Int64)
 	# TODO: quickly calculate precision
 	return AlgebraicNumber(interleave(an.coeff, n-1), an.apprx^(1/n))
 end
+
+import Base.sqrt 
+import Base.cbrt
+sqrt(an::AlgebraicNumber) = root(an,2)
+cbrt(an::AlgebraicNumber) = root(an,3)
 
 # function pow2(an::AlgebraicNumber)
 # 	cfs = an.coeff 
@@ -173,59 +196,20 @@ function +(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	return AlgebraicNumber(p, an1.apprx + an2.apprx)
 end
 
+function -(an1::AlgebraicNumber)
+	cfs = an1.coeff
+	for i=1:2:length(cfs)
+		cfs[i]=-cfs[i]
+	end
+	return AlgebraicNumber(cfs, -an1.apprx, an1.prec)
+end
+
+-(an1::AlgebraicNumber,an2::AlgebraicNumber) = an1+(-an2)
+
 # take roots of a polynomial,
 # and return them as algebraic numbers
 function alg_roots(coeff::Vector{Integer})
+	#TODO
 end
 
 confirm_algnumber(b) = sum(b.coeff .* [b.apprx^(i-1) for i=1:length(b.coeff)])
-
-function test1(n)
-	coeff = rand(1:10,n+1)
-	a = AlgebraicNumber(coeff, Complex{BigFloat}(0.0), BigFloat(0.0))
-	a.apprx = prec_roots(a.coeff)[rand(1:n)]
-	calc_precision!(a)
-	a = simplify(a)
-	@show a.coeff, convert(Complex{Float64},a.apprx), a.prec
-	b = nthroot(a,2)
-	#b = a*a
-	@show b.coeff, convert(Complex{Float64},b.apprx), b.prec
-	#c = nthroot(b,2)
-	c = b*b
-	#c = pow2(b)
-	@show c.coeff, convert(Complex{Float64},c.apprx), c.prec
-end
-
-function test2(n)
-	coeff = rand(1:10,n+1)
-	a = AlgebraicNumber(coeff, BigFloat(0.0), BigFloat(0.0))
-	a.apprx = roots(a.coeff)[rand(1:n)]
-	calc_precision!(a)
-
-	coeff = rand(1:10,n+1)
-	b = AlgebraicNumber(coeff, BigFloat(0.0), BigFloat(0.0))
-	b.apprx = roots(b.coeff)[rand(1:n)]
-	calc_precision!(b)	
-
-	c = a*b
-	abs(roots(c.coeff) .- c.apprx)
-end
-
-# sqrt2 = nthroot(AlgebraicNumber(2),2)
-# an.p = (x^2-2)*(x^2-3)
-# calc_precision!(an)
-# an = simplify(an)
-# @show an.p  (should be x^2-2)
-
-
-# sqrt2 = nthroot(AlgebraicNumber(2),2)
-# sqrt3 = nthroot(AlgebraicNumber(3),2)
-# sqrt6=sqrt2*sqrt3
-# sqrt6_ = nthroot(AlgebraicNumber(6),2)
-# calc_precision!(sqrt6_)
-# @show sqrt6 == sqrt6_
-
-# this little example has got me stumped.
-# an=nthroot(nthroot(AlgebraicNumber(3),2) + AlgebraicNumber(-1),2)
-# b = an*an
-# b.coeff and b.apprx don't match up!

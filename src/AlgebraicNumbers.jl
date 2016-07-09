@@ -1,11 +1,10 @@
 module AlgebraicNumbers
 
 export AlgebraicNumber
-export *,+,-,/,^,==,inv
+export *,+,-,/,^,root,==,inv
+export sqrt,cbrt
 
 include("algebraic.jl")
-#include("elementary.jl")
-#include("compose.jl")
 include("newton.jl")
 
 end
