@@ -66,7 +66,7 @@ function test5()
 	n = sqrt(AlgebraicNumber(9*5))-sqrt(AlgebraicNumber(4*7))+sqrt(AlgebraicNumber(35))
 	d = 1-sqrt(AlgebraicNumber(5))+sqrt(AlgebraicNumber(7))
 	α=n/d
-	@assert(α.coeff == BigInt[3596, 2312, -280, -156, 19])
+	assert(α.coeff == BigInt[3596, 2312, -280, -156, 19])
 end
 
 # sqrt2 = root(AlgebraicNumber(2),2)

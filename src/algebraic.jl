@@ -7,7 +7,7 @@ using Nemo
 import PolynomialRoots
 import PolynomialRoots:roots
 
-# see: http://nemocas.org/nemo-0.3.pdf
+# see: http://nemocas.org/nemo-0.4.pdf
 
 # An algebraic number,
 # consisting of the minimal polynomial of the number,
@@ -56,13 +56,6 @@ end
 get_coeffs(p::Nemo.fmpz_poly) = [BigInt(Nemo.coeff(p,i)) for i=0:Nemo.degree(p)]
 prec_roots{T<:Integer}(a::Vector{T}) = PolynomialRoots.roots(convert(Array{BigFloat},a))
 # TODO: make sure roots returns distinct roots
-
-
-
-# # find all roots of a polynomial, with enough precision such that
-# # all distinct roots have distinct floating-point representations
-# function roots_minprecision(polynomial, options...)
-# end
 
 # Given an algebraic number, find minimum precision required
 # to specify it among roots of an.p
@@ -142,24 +135,16 @@ inv(an::AlgebraicNumber) = AlgebraicNumber(reverse(an.coeff), inv(an.apprx))
 # interleave each elemnet of a with n zeros
 interleave(a,n) =  vec(vcat(a',zeros(Int64,n,length(a))))
 function root(an::AlgebraicNumber,n::Int64)
-	# # if power is zero, return 1
-	# # TODO: handle case where an.apprx=0.0
-	# if n==0
-	# 	R,x=PolynomialRing(ZZ,"x")
-	# 	return AlgebraicNumber(x-1,BigFloat(1.0),BigFloat(1.0))
-	# end
-	# # if power is negative, first invert.
-	# if n < 0
-	# 	an = inv(an)
-	# 	n = -n
-	# end
 	if n==0
 		throw(ArgumentError("n must be nonzero"))
 	end
 	if n==1
 		return an
 	end
-	# TODO: negative case
+	if n < 0
+		an = inv(an)
+		n = -n
+	end
 	# TODO: quickly calculate precision
 	return AlgebraicNumber(interleave(an.coeff, n-1), an.apprx^(1/n))
 end
@@ -169,13 +154,14 @@ import Base.cbrt
 sqrt(an::AlgebraicNumber) = root(an,2)
 cbrt(an::AlgebraicNumber) = root(an,3)
 
-# function pow2(an::AlgebraicNumber)
-# 	cfs = an.coeff 
-# 	cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
-# 	pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
-# 	p2 = get_coeffs(pp)[1:2:end]
-# 	return AlgebraicNumber(p2, an.apprx*an.apprx)
-# end
+# TODO: special, more efficient cases for ^2 and ^3
+function pow2(an::AlgebraicNumber)
+	cfs = an.coeff 
+	cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
+	pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
+	p2 = get_coeffs(pp)[1:2:end]
+	return AlgebraicNumber(p2, an.apprx*an.apprx)
+end
 
 
 # partially simplify a polynomial b
