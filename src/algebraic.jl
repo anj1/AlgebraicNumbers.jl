@@ -28,16 +28,6 @@ function AlgebraicNumber{T,F}(coeff::Vector{T}, apprx::Complex{F})
 	return simplify(an)
 end
 
-import Base.convert 
-function convert(::Int64,an::AlgebraicNumber)
-	c = an.coeff
-	if length(c)==2 && abs(c[2])==1
-		return c[1]*c[2]
-	else
-		throw(InexactError())
-	end
-end
-
 function poly_from_coeff(a)
 	R,x=PolynomialRing(ZZ,"x")
 	sum([a[i]*x^(i-1) for i=1:length(a)])
