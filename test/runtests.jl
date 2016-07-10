@@ -41,31 +41,31 @@ end
 function test4()
 	# simple test
 	sqrt2 = sqrt(AlgebraicNumber(2))
-	assert(sqrt2^2 == AlgebraicNumber(2))
+	assert(sqrt2^2 == 2)
 
 	# Golden ratio
-	ϕ = AlgebraicNumber(1//2)+sqrt(AlgebraicNumber(5//4))
+	ϕ = 1//2 + sqrt(AlgebraicNumber(5//4))
 
 	# As we all know, this has the property that:
-	assert(AlgebraicNumber(1)+inv(ϕ) == ϕ)
+	assert(1+1/ϕ == ϕ)
 end
 
 function plastic_constant_test()
 	# see http://mathworld.wolfram.com/PlasticConstant.html
 	a = sqrt(AlgebraicNumber(69))
-	n = cbrt(AlgebraicNumber(9)-a) + cbrt(AlgebraicNumber(9)+a)
+	n = cbrt(9-a) + cbrt(9+a)
 	p = n*inv(cbrt(AlgebraicNumber(18)))
 
-	assert(p-AlgebraicNumber(1)==inv(p^4))
-	assert(p+AlgebraicNumber(1)==p^3)
+	assert(p-1==1/(p^4))
+	assert(p+1==p^3)
 end
 
 function test5()
 	# just an answer to a stackoverflow Q.
 	# http://math.stackexchange.com/questions/422233/how-to-find-a-minimal-polynomial-field-theory
 	n = sqrt(AlgebraicNumber(9*5))-sqrt(AlgebraicNumber(4*7))+sqrt(AlgebraicNumber(35))
-	d = AlgebraicNumber(1)-sqrt(AlgebraicNumber(5))+sqrt(AlgebraicNumber(7))
-	α=n*inv(d)
+	d = 1-sqrt(AlgebraicNumber(5))+sqrt(AlgebraicNumber(7))
+	α=n/d
 	@assert(α.coeff == BigInt[3596, 2312, -280, -156, 19])
 end
 

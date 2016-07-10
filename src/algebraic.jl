@@ -14,7 +14,7 @@ import PolynomialRoots:roots
 # an arbitrary-precision approximation of the number,
 # and prec which specifies the minimal distance between roots of p
 # TODO: apprx has to be complex.
-type AlgebraicNumber{T<:Integer,F<:AbstractFloat}
+type AlgebraicNumber{T<:Integer,F<:AbstractFloat} <: Number
 	coeff::Vector{T}
 	apprx::Complex{F}
 	prec::F
@@ -27,10 +27,6 @@ function AlgebraicNumber{T,F}(coeff::Vector{T}, apprx::Complex{F})
 	calc_precision!(an)
 	return simplify(an)
 end
-# Algebraic number from integer
-AlgebraicNumber{T<:Integer}(x::T) = AlgebraicNumber([-x,one(T)], Complex{BigFloat}(x))
-# Algebraic number from rational
-AlgebraicNumber{T<:Integer}(x::Rational{T}) = AlgebraicNumber([-num(x), den(x)], Complex{BigFloat}(x))
 
 import Base.convert 
 function convert(::Int64,an::AlgebraicNumber)
@@ -131,6 +127,7 @@ import Base.^
 import Base.*
 import Base.+
 import Base.-
+import Base./
 function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	cf1 = an1.coeff
 	cf2 = an2.coeff
@@ -205,6 +202,7 @@ function -(an1::AlgebraicNumber)
 end
 
 -(an1::AlgebraicNumber,an2::AlgebraicNumber) = an1+(-an2)
+/(an1::AlgebraicNumber,an2::AlgebraicNumber) = an1*(inv(an2))
 
 # take roots of a polynomial,
 # and return them as algebraic numbers
