@@ -55,8 +55,12 @@ function calc_precision!(an::AlgebraicNumber)
 	function min_pairwise_dist(x)
 		biginf = convert(BigFloat,Inf)
 		n = length(x)
-		pdists = [i < j ? abs(x[i]-x[j]) : biginf for i=1:n,j=1:n]
-		return minimum(pdists)
+		if n<=1
+			return Inf
+		else
+			pdists = [i < j ? abs(x[i]-x[j]) : biginf for i=1:n,j=1:n]
+			return minimum(pdists)
+		end
 	end
 
 	# first, find all roots of p
@@ -80,6 +84,13 @@ end
 # This assumes that calc_precision! has already been called.
 function simplify(an::AlgebraicNumber)
 	# for all factors of an.p, find the one that matches our roots
+
+	# If linear polynomial, then already irreducible.
+	if length(an.coeff)<=2
+		return an
+	end
+
+	# Otherwise, factor out.
 	R, x = PolynomialRing(ZZ, "x")
 	p = R(map(ZZ, an.coeff))
 	fctr_dict = Nemo.factor(p)
@@ -111,6 +122,10 @@ import Base.*
 import Base.+
 import Base.-
 import Base./
+import Base.conj
+import Base.abs
+import Base.zero 
+import Base.one
 function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	cf1 = an1.coeff
 	cf2 = an2.coeff
@@ -160,6 +175,10 @@ reduce_repeated_factors(p::Nemo.fmpz_poly) = prod(keys(Nemo.factor(p)))
 
 # multiplication
 function *(an1::AlgebraicNumber,an2::AlgebraicNumber)
+	if an1==0 || an2==0
+		# TODO: don't handle this explicitly
+		return zero(AlgebraicNumber)
+	end
 	p = composed_product(an1.coeff, an2.coeff)
 	return AlgebraicNumber(p, an1.apprx * an2.apprx)
 end
@@ -179,6 +198,13 @@ end
 
 -(an1::AlgebraicNumber,an2::AlgebraicNumber) = an1+(-an2)
 /(an1::AlgebraicNumber,an2::AlgebraicNumber) = an1*(inv(an2))
+
+# the complex conjugate of an algebraic number has the same minimal polynomial
+conj(an::AlgebraicNumber) = AlgebraicNumber(an.coeff,conj(an.apprx),an.prec)
+abs(an::AlgebraicNumber) = sqrt(an*conj(an))
+
+zero(::Type{AlgebraicNumber}) = AlgebraicNumber(BigInt[0, 1],Complex{BigFloat}(0.0),BigFloat(1.0))
+one(::Type{AlgebraicNumber})  = AlgebraicNumber(BigInt[-1,1],Complex{BigFloat}(1.0),BigFloat(1.0))
 
 # take roots of a polynomial,
 # and return them as algebraic numbers

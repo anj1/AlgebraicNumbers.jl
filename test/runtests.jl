@@ -69,6 +69,13 @@ function test5()
 	assert(α.coeff == BigInt[3596, 2312, -280, -156, 19])
 end
 
+function test_abs()
+	ii = sqrt(AlgebraicNumber(-1))
+	assert(conj(ii) == -ii)
+	assert(abs(ii) == 1)
+	assert(abs(AlgebraicNumber(-7//8))==7//8)
+end
+
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
 # calc_precision!(an)
