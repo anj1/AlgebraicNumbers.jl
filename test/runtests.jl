@@ -76,6 +76,12 @@ function test_abs()
 	assert(abs(AlgebraicNumber(-7//8))==7//8)
 end
 
+function test_real_imag()
+	a = root(AlgebraicNumber(-1),5)
+	alg_im = sqrt(AlgebraicNumber(-1))
+	assert(real(a) + alg_im*imag(a) == a)
+end
+
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
 # calc_precision!(an)

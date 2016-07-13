@@ -126,6 +126,8 @@ import Base.conj
 import Base.abs
 import Base.zero 
 import Base.one
+import Base.real 
+import Base.imag
 function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	cf1 = an1.coeff
 	cf2 = an2.coeff
@@ -205,6 +207,9 @@ abs(an::AlgebraicNumber) = sqrt(an*conj(an))
 
 zero(::Type{AlgebraicNumber}) = AlgebraicNumber(BigInt[0, 1],Complex{BigFloat}(0.0),BigFloat(1.0))
 one(::Type{AlgebraicNumber})  = AlgebraicNumber(BigInt[-1,1],Complex{BigFloat}(1.0),BigFloat(1.0))
+
+real(an::AlgebraicNumber) = (an+conj(an))/AlgebraicNumber(BigInt(2))
+imag(an::AlgebraicNumber) = (an-conj(an))/sqrt(AlgebraicNumber(BigInt(-4)))
 
 # take roots of a polynomial,
 # and return them as algebraic numbers
