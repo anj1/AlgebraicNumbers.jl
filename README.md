@@ -39,10 +39,15 @@ sqrt3 = sqrt(AlgebraicNumber(3))
 sqrt6 = sqrt2*sqrt3
 # a simple example
 assert(sqrt6 == sqrt(AlgebraicNumber(6)))
+
 # slightly more complicated
 x = 1 + sqrt6
 assert((x - 1)^2 == 6)
+
 # even more complicated
+assert(sqrt6 == sqrt(x^2 - 2*sqrt6 - 1))
+
+# and here's another one
 y = sqrt(x)
 assert((y^2 - 1)^2 == 6)
 ```
