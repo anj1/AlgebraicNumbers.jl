@@ -4,7 +4,7 @@ import Base.promote
 
 # Algebraic number from integer
 convert{T<:Integer}(::Type{AlgebraicNumber}, x::T) = 
-    AlgebraicNumber([-x,one(T)], Complex{BigFloat}(x))
+    AlgebraicNumber(BigInt[-x,one(T)], Complex{BigFloat}(x))
 # Algebraic number from rational
 convert{T<:Integer}(::Type{AlgebraicNumber}, x::Rational{T}) =
     AlgebraicNumber([-num(x), den(x)], Complex{BigFloat}(x))
