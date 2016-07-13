@@ -23,7 +23,15 @@ sqrt(AlgebraicNumber(x))^2 == x
 
 Here, `AlgebraicNumber` is just a constructor that takes a number (either an integer or a rational number) and produces an algebraic number.
 
-You can do arithmetic on algebraic numbers and all results will be represented exactly:
+Note that if you display an algebraic number, you might get something like:
+```julia
+julia> AlgebraicNumber(1)
+≈1.0 + 0.0im
+```
+
+That is, something that looks like an approximate complex number, not an exact number. This is *only* the library's way of *displaying* algebraic numbers, and it's simply because in general it is impossible to represent an algebraic number exactly in decimal notation no matter how many digits you display! Internally, algebraic numbers are represented exactly, but they are not represented using decimal or floating-point representation (more on internal representation below).
+
+Indeed, you can do arithmetic on algebraic numbers and all results will be represented exactly:
 
 ```julia
 sqrt2 = sqrt(AlgebraicNumber(2))
