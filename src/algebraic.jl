@@ -218,3 +218,17 @@ function alg_roots(coeff::Vector{Integer})
 end
 
 confirm_algnumber(b) = sum(b.coeff .* [b.apprx^(i-1) for i=1:length(b.coeff)])
+
+# compute exp(pi*i*a),
+# which is algebraic if a is rational.
+function exp_alg(a::Rational)
+	# first, obtain polynomial
+	p = interleave(BigInt[-1,1], 2*den(a)-1)
+	# now, select root.
+	apprx = exp(im*BigFloat(pi)*a)
+	# Finally, return minimal polynomial w.r.t. that root
+	return AlgebraicNumber(p,apprx)
+end
+
+cos_alg(a::Rational) = real(exp_alg(a))
+sin_alg(a::Rational) = imag(exp_alg(a))
