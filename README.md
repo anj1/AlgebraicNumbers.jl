@@ -3,7 +3,7 @@ AlgebraicNumbers.jl
 
 #### `sqrt(2)^2 == 2`
 
-This package provides a way of dealing with real numbers exactly and with infinite precision. To see how this works, it's useful to compare with familiar number types like integers and so on. Integer arithmetic (e.g. 2+2==4) is exact but is limited to the operations +, -, and \*. Adding, subtracting, or multiplying two integers produces another integer. With [*rational* numbers](http://docs.julialang.org/en/release-0.4/manual/complex-and-rational-numbers/#rational-numbers), division is included as well. That is, if you add, subtract, muliply, or divide two rational numbers, you get another rational number. This is very useful for exact arithmetic. *Algebraic* numbers take this further, including not only the four elementary operations, but also *root-taking* operations, for example sqrt() and cbrt(). More generally, the *n*th root of an algebraic number `x` can be taken with:
+This package provides a way of dealing with real and complex numbers exactly and with infinite precision. To see how this works, it's useful to compare with familiar number types like integers and so on. Integer arithmetic (e.g. 2+2==4) is exact but is limited to the operations +, -, and \*. While addding, subtracting, or multiplying two integers always produces another integer, that's not always true with division. With [*rational* numbers](http://docs.julialang.org/en/release-0.4/manual/complex-and-rational-numbers/#rational-numbers), division is included as well. Since many numerical operations can be reduced to sequences of the four elementary operations, this allows a wider range of exact arithmetic to be carried out. *Algebraic* numbers take this further, including not only the four elementary operations, but also *root-taking* operations, for example sqrt() and cbrt(). More generally, the *n*th root of an algebraic number `x` can be taken with:
 
 ```julia
 root(x, n)
@@ -12,6 +12,7 @@ root(x, n)
 And this will be represented exactly. For instance, you can see for yourself that:
 
 ```julia
+# sqrt(x) is defined as root(x, 2)
 sqrt(AlgebraicNumber(2))^2 == 2
 ```
 
