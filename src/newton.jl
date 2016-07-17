@@ -52,11 +52,14 @@ to_array(p) = Rational{BigInt}[Rational(coeff(p,i)) for i=0:Nemo.degree(p)]
 # This algorithm is based on the Leverrier-Faddeev algorithm
 # see: http://math.stackexchange.com/questions/405822/what-is-the-fastest-way-to-find-the-characteristic-polynomial-of-a-matrix
 function from_newton{T}(tr::Vector{T})
-	c = T[]
-	for k = 1 : length(tr)-1
-		push!(c, -dot(tr[2:(k+1)], vcat(reverse(c),1))/k)
+	n = length(tr)
+	c = Array(T,n)
+	c[end] = one(T)
+	for k = 1 : n-1
+		next_c = -dot(tr[2:(k+1)], c[end-k+1:end])/k
+		c[end-k] = next_c
 	end
-	return vcat(reverse(c),1)
+	return c
 end 
 
 # Hadamard (element-wise) product of two polynomials
