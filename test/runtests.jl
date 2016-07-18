@@ -1,11 +1,5 @@
 using Base.Test
 
-test4()
-test5()
-plastic_constant_test()
-test_abs()
-test_real_imag()
-
 function test1(n)
 	coeff = rand(1:10,n+1)
 	a = AlgebraicNumber(coeff, Complex{BigFloat}(0.0), BigFloat(0.0))
@@ -89,6 +83,13 @@ function test_real_imag()
 	alg_im = sqrt(AlgebraicNumber(-1))
 	@test real(a) + alg_im*imag(a) == a
 end
+
+test4()
+test5()
+plastic_constant_test()
+test_abs()
+test_real_imag()
+
 
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
