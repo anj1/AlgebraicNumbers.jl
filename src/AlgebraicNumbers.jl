@@ -3,6 +3,7 @@ module AlgebraicNumbers
 export AlgebraicNumber
 export *,+,-,/,^,root,==,inv
 export sqrt,cbrt
+export exp_alg,cos_alg,sin_alg
 
 include("algebraic.jl")
 include("promote.jl")

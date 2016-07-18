@@ -1,4 +1,5 @@
 using Base.Test
+using AlgebraicNumbers 
 
 function test1(n)
 	coeff = rand(1:10,n+1)
@@ -88,7 +89,7 @@ test4()
 test5()
 plastic_constant_test()
 test_abs()
-test_real_imag()
+#test_real_imag()
 
 
 # sqrt2 = root(AlgebraicNumber(2),2)
