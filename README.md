@@ -1,6 +1,8 @@
 AlgebraicNumbers.jl
 ------
 
+[![Build Status](https://travis-ci.org/anj1/AlgebraicNumbers.jl.svg?branch=master)](https://travis-ci.org/anj1/AlgebraicNumbers.jl)
+
 #### `sqrt(2)^2 == 2`
 
 This package provides a way of dealing with real and complex numbers exactly and with infinite precision. To see how this works, it's useful to compare with familiar number types like integers and so on. Integer arithmetic (e.g. 2+2==4) is exact but is limited to the operations +, -, and \*. While addding, subtracting, or multiplying two integers always produces another integer, that's not always true with division. With [*rational* numbers](http://docs.julialang.org/en/release-0.4/manual/complex-and-rational-numbers/#rational-numbers), division is included as well. Since many numerical operations can be reduced to sequences of the four elementary operations, this allows a wider range of exact arithmetic to be carried out. *Algebraic* numbers take this further, including not only the four elementary operations, but also *root-taking* operations, for example sqrt() and cbrt(). More generally, the *n*th root of an algebraic number `x` can be taken with:
