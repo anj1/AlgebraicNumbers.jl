@@ -1,3 +1,11 @@
+using Base.Test
+
+test4()
+test5()
+plastic_constant_test()
+test_abs()
+test_real_imag()
+
 function test1(n)
 	coeff = rand(1:10,n+1)
 	a = AlgebraicNumber(coeff, Complex{BigFloat}(0.0), BigFloat(0.0))
@@ -41,13 +49,13 @@ end
 function test4()
 	# simple test
 	sqrt2 = sqrt(AlgebraicNumber(2))
-	assert(sqrt2^2 == 2)
+	@test sqrt2^2 == 2
 
 	# Golden ratio
-	ϕ = 1//2 + sqrt(AlgebraicNumber(5//4))
+	ϕ = 1//2 + sqrt(AlgebraicNumber(5)/4)
 
 	# As we all know, this has the property that:
-	assert(1+1/ϕ == ϕ)
+	@test 1+1/ϕ == ϕ
 end
 
 function plastic_constant_test()
@@ -56,8 +64,8 @@ function plastic_constant_test()
 	n = cbrt(9-a) + cbrt(9+a)
 	p = n*inv(cbrt(AlgebraicNumber(18)))
 
-	assert(p-1==1/(p^4))
-	assert(p+1==p^3)
+	@test p-1==1/(p^4)
+	@test p+1==p^3
 end
 
 function test5()
@@ -66,20 +74,20 @@ function test5()
 	n = sqrt(AlgebraicNumber(9*5))-sqrt(AlgebraicNumber(4*7))+sqrt(AlgebraicNumber(35))
 	d = 1-sqrt(AlgebraicNumber(5))+sqrt(AlgebraicNumber(7))
 	α=n/d
-	assert(α.coeff == BigInt[3596, 2312, -280, -156, 19])
+	@test α.coeff == BigInt[3596, 2312, -280, -156, 19]
 end
 
 function test_abs()
 	ii = sqrt(AlgebraicNumber(-1))
-	assert(conj(ii) == -ii)
-	assert(abs(ii) == 1)
-	assert(abs(AlgebraicNumber(-7//8))==7//8)
+	@test conj(ii) == -ii
+	@test abs(ii) == 1
+	@test abs(AlgebraicNumber(-7//8))==7//8
 end
 
 function test_real_imag()
 	a = root(AlgebraicNumber(-1),5)
 	alg_im = sqrt(AlgebraicNumber(-1))
-	assert(real(a) + alg_im*imag(a) == a)
+	@test real(a) + alg_im*imag(a) == a
 end
 
 # sqrt2 = root(AlgebraicNumber(2),2)

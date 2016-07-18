@@ -7,7 +7,7 @@ convert{T<:Integer}(::Type{AlgebraicNumber}, x::T) =
     AlgebraicNumber(BigInt[-x,one(T)], Complex{BigFloat}(x))
 # Algebraic number from rational
 convert{T<:Integer}(::Type{AlgebraicNumber}, x::Rational{T}) =
-    AlgebraicNumber([-num(x), den(x)], Complex{BigFloat}(x))
+    AlgebraicNumber(BigInt[-num(x), den(x)], Complex{BigFloat}(x))
 
 # promotions
 promote{T<:Integer}(x::T, y::AlgebraicNumber) = (AlgebraicNumber(x),y)
