@@ -1,0 +1,9 @@
+language: julia
+notifications:
+  email: false
+julia:
+  - 0.4
+  - nightly
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.test("AlgebraicNumbers")'
