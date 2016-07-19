@@ -164,9 +164,15 @@ cbrt(an::AlgebraicNumber) = root(an,3)
 # TODO: special, more efficient cases for ^2 and ^3
 function pow2(an::AlgebraicNumber)
 	cfs = an.coeff 
-	cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
-	pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
-	p2 = get_coeffs(pp)[1:2:end]
+	# first check if it is already in the form of a square root.
+	if all(cfs[2:2:end] .== 0)
+		pp_cfs = cfs 
+	else
+		cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
+		pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
+		pp_cfs = get_coeffs(pp)
+	end
+	p2 = pp_cfs[1:2:end]
 	return AlgebraicNumber(p2, an.apprx*an.apprx)
 end
 
@@ -181,6 +187,10 @@ function *(an1::AlgebraicNumber,an2::AlgebraicNumber)
 		# TODO: don't handle this explicitly
 		return zero(AlgebraicNumber)
 	end
+	# check if p==q, if then use a more optimized and correct routine
+	#if an1.coeff == an2.coeff 
+	#	return 
+	#end
 	p = composed_product(an1.coeff, an2.coeff)
 	return AlgebraicNumber(p, an1.apprx * an2.apprx)
 end
@@ -191,7 +201,7 @@ function +(an1::AlgebraicNumber,an2::AlgebraicNumber)
 end
 
 function -(an1::AlgebraicNumber)
-	cfs = an1.coeff
+	cfs = copy(an1.coeff)
 	for i=1:2:length(cfs)
 		cfs[i]=-cfs[i]
 	end
@@ -208,8 +218,8 @@ abs(an::AlgebraicNumber) = sqrt(an*conj(an))
 zero(::Type{AlgebraicNumber}) = AlgebraicNumber(BigInt[0, 1],Complex{BigFloat}(0.0),BigFloat(1.0))
 one(::Type{AlgebraicNumber})  = AlgebraicNumber(BigInt[-1,1],Complex{BigFloat}(1.0),BigFloat(1.0))
 
-real(an::AlgebraicNumber) = (an+conj(an))/AlgebraicNumber(BigInt(2))
-imag(an::AlgebraicNumber) = (an-conj(an))/sqrt(AlgebraicNumber(BigInt(-4)))
+real(an::AlgebraicNumber) = (an+conj(an))*AlgebraicNumber(BigInt[1,-2], BigFloat(0.5)+0im,BigFloat(0.5))
+imag(an::AlgebraicNumber) = (an-conj(an))*AlgebraicNumber(BigInt[1,0,4],BigFloat(-0.5)*im,BigFloat(0.5))
 
 # take roots of a polynomial,
 # and return them as algebraic numbers

@@ -89,7 +89,7 @@ test4()
 test5()
 plastic_constant_test()
 test_abs()
-#test_real_imag()
+test_real_imag()
 
 
 # sqrt2 = root(AlgebraicNumber(2),2)
