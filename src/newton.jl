@@ -52,6 +52,10 @@ to_array(p) = Rational{BigInt}[Rational(coeff(p,i)) for i=0:Nemo.degree(p)]
 # This algorithm is based on the Leverrier-Faddeev algorithm
 # see: http://math.stackexchange.com/questions/405822/what-is-the-fastest-way-to-find-the-characteristic-polynomial-of-a-matrix
 function from_newton{T}(tr::Vector{T})
+	# special case
+	if tr==[1]
+		return [0,1]
+	end
 	n = length(tr)
 	c = Array(T,n)
 	c[end] = one(T)

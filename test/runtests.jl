@@ -83,6 +83,11 @@ function test_real_imag()
 	a = root(AlgebraicNumber(-1),5)
 	alg_im = sqrt(AlgebraicNumber(-1))
 	@test real(a) + alg_im*imag(a) == a
+
+	x = rand(0:20)//10
+	@test cos_alg(x - 1//2) == sin_alg(x)
+	x = 2//1
+	@test cos_alg(x - 1//2) == sin_alg(x)
 end
 
 test4()
