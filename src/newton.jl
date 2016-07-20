@@ -9,8 +9,8 @@ using Nemo
 derivative(c::Vector) = c[2:end] .* (1:length(c)-1)
 
 function polyinv{T}(coeffs::Vector{T}, n)
-	R, x = Nemo.PowerSeriesRing(QQ, n, "x")
-	a = R(map(QQ, coeffs), length(coeffs), n)
+	R, x = Nemo.PowerSeriesRing(Nemo.FlintQQ, n, "x")
+	a = R(map(Nemo.FlintQQ, coeffs), length(coeffs), n)
 	ai = inv(a)
 	return Nemo.fmpq[coeff(ai,i) for i=0:n-1]
 end
@@ -27,8 +27,8 @@ function to_newton(coeffs::Vector{BigInt},n,R,x)
 	b_cfs = reverse(coeffs)
 	
 	# initialize power series polynomials
-	a = R(map(QQ, a_cfs))
-	b = R(map(QQ, b_cfs))
+	a = R(map(Nemo.FlintQQ, a_cfs))
+	b = R(map(Nemo.FlintQQ, b_cfs))
 	b0 = R(polyinv(b_cfs, n))
 
 	c  = truncate(a*b0, d)
@@ -76,7 +76,7 @@ end
 function composed_product(p::Vector{BigInt},q::Vector{BigInt})
 	# compute newton series
 	n = (length(p)-1)*(length(q)-1)+1
-	R, x = Nemo.PolynomialRing(QQ, "x")
+	R, x = Nemo.PolynomialRing(Nemo.FlintQQ, "x")
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 
@@ -91,13 +91,13 @@ end
 function composed_sum(p::Vector{BigInt},q::Vector{BigInt})
 	# compute newton series
 	n = (length(p)-1)*(length(q)-1)+1
-	R, x = Nemo.PolynomialRing(QQ, "x")
+	R, x = Nemo.PolynomialRing(Nemo.FlintQQ, "x")
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 
 	# exp series 
-	ee  = R(QQ[QQ(1//factorial(BigInt(i))) for i=0:(n-1)])
-	eei = R(QQ[QQ(   factorial(BigInt(i))) for i=0:(n-1)])
+	ee  = R(Nemo.FlintQQ[Nemo.FlintQQ(1//factorial(BigInt(i))) for i=0:(n-1)])
+	eei = R(Nemo.FlintQQ[Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:(n-1)])
 
 	# multiply newton series and invert
 	m = truncate(hadm(a,ee,R)*hadm(b,ee,R),n)

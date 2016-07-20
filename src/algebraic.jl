@@ -6,6 +6,7 @@
 using Nemo
 import PolynomialRoots
 import PolynomialRoots:roots
+importall Base
 
 # see: http://nemocas.org/nemo-0.4.pdf
 
@@ -29,7 +30,7 @@ function AlgebraicNumber{T,F}(coeff::Vector{T}, apprx::Complex{F})
 end
 
 function poly_from_coeff(a)
-	R,x=PolynomialRing(ZZ,"x")
+	R,x=PolynomialRing(Nemo.FlintZZ,"x")
 	sum([a[i]*x^(i-1) for i=1:length(a)])
 end
 
@@ -91,8 +92,8 @@ function simplify(an::AlgebraicNumber)
 	end
 
 	# Otherwise, factor out.
-	R, x = PolynomialRing(ZZ, "x")
-	p = R(map(ZZ, an.coeff))
+	R, x = PolynomialRing(Nemo.FlintZZ, "x")
+	p = R(map(Nemo.FlintZZ, an.coeff))
 	fctr_dict = Nemo.factor(p)
 	fctrs = keys(fctr_dict)
 
@@ -115,19 +116,6 @@ function simplify(an::AlgebraicNumber)
 	return an 
 end
 
-import Base.==
-import Base.inv
-import Base.^
-import Base.*
-import Base.+
-import Base.-
-import Base./
-import Base.conj
-import Base.abs
-import Base.zero 
-import Base.one
-import Base.real 
-import Base.imag
 function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	cf1 = an1.coeff
 	cf2 = an2.coeff
