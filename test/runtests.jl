@@ -90,12 +90,26 @@ function test_real_imag()
 	@test cos_alg(x - 1//2) == sin_alg(x)
 end
 
+# TODO: add some more tests
+function test_pow2()
+	a = AlgebraicNumber(3//2)
+	@test pow2(a) == AlgebraicNumber(9//4)
+end
+
+function test_show()
+	a = IOBuffer()
+	show(a, sqrt(AlgebraicNumber(-1))+1)
+
+	@test convert(UTF8String, takebuf_array(a)) == "≈1.0 + 1.0im"
+end
+
 test4()
 test5()
 plastic_constant_test()
 test_abs()
 test_real_imag()
-
+test_pow2()
+test_show()
 
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
