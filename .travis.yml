@@ -6,6 +6,6 @@ julia:
   - nightly
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.test("AlgebraicNumbers")'
+  - julia -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.test("AlgebraicNumbers"; coverage=true)'
 after_success:
   - julia -e 'cd(Pkg.dir("AlgebraicNumbers")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
