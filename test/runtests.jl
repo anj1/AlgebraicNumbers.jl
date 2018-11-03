@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using AlgebraicNumbers 
 
 function test1(n)
