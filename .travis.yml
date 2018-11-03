@@ -1,16 +1,17 @@
 language: julia
-sudo: false
 os:
-  - linux 
-  - osx
-notifications:
-  email: false
+  - linux
+#  - osx
+# branches:
+#   except:
+#     - 0.7
 julia:
   - 1.0
-  #- nightly
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'using Pkg; Pkg.test(coverage=true)'
-after_success:
-  - cat Manifest.toml
-  - julia --color=yes -e 'using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - nightly
+matrix:
+  allow_failures:
+  - julia: nightly
+notifications:
+  email:
+    on_success: never
+on_failure: always
