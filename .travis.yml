@@ -2,10 +2,10 @@ language: julia
 notifications:
   email: false
 julia:
-  - 0.4
+  - 1.0
   - nightly
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.test("AlgebraicNumbers"; coverage=true)'
+  - julia -e 'using Pkg; Pkg.init(); Pkg.clone(pwd()); Pkg.test("AlgebraicNumbers"; coverage=true)'
 after_success:
-  - julia -e 'cd(Pkg.dir("AlgebraicNumbers")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
+  - julia -e 'using Pkg; cd(Pkg.dir("AlgebraicNumbers")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
