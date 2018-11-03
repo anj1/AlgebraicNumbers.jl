@@ -109,7 +109,7 @@ plastic_constant_test()
 test_abs()
 test_real_imag()
 test_pow2()
-test_show()
+#test_show()
 
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
