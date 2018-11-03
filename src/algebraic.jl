@@ -9,7 +9,8 @@ import PolynomialRoots:roots
 
 import Base.zero,Base.one
 import Base.+,Base.-,Base.*,Base./,Base.inv
-import Base.abs
+import Base.abs,Base.conj
+import Base.real,Base.imag
 import Base.==
 
 # see: http://nemocas.org/nemo-0.4.pdf
