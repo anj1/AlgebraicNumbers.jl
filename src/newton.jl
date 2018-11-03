@@ -8,9 +8,9 @@ using Nemo
 # derivative of polynomial
 derivative(c::Vector) = c[2:end] .* (1:length(c)-1)
 
-function polyinv{T}(coeffs::Vector{T}, n)
+function polyinv(coeffs::Vector, n)
 	R, x = Nemo.PowerSeriesRing(Nemo.FlintQQ, n, "x")
-	a = R(map(Nemo.FlintQQ, coeffs), length(coeffs), n)
+	a = R(map(Nemo.FlintQQ, coeffs), length(coeffs), n, 0)
 	ai = inv(a)
 	return Nemo.fmpq[coeff(ai,i) for i=0:n-1]
 end
@@ -51,16 +51,16 @@ to_array(p) = Rational{BigInt}[Rational(coeff(p,i)) for i=0:Nemo.degree(p)]
 # tr: traces i.e. newton series
 # This algorithm is based on the Leverrier-Faddeev algorithm
 # see: http://math.stackexchange.com/questions/405822/what-is-the-fastest-way-to-find-the-characteristic-polynomial-of-a-matrix
-function from_newton{T}(tr::Vector{T})
+function from_newton(tr::Vector{T}) where {T<:Number}
 	# special case
 	if tr==[1]
 		return [0,1]
 	end
 	n = length(tr)
-	c = Array(T,n)
+	c = Array{T}(UndefInitializer(),n)
 	c[end] = one(T)
 	for k = 1 : n-1
-		next_c = -dot(tr[2:(k+1)], c[end-k+1:end])/k
+		next_c = -sum(tr[2:(k+1)].*c[end-k+1:end])/k
 		c[end-k] = next_c
 	end
 	return c
@@ -84,7 +84,7 @@ function composed_product(p::Vector{BigInt},q::Vector{BigInt})
 	pq = from_newton(to_array(hadm(a,b,R)))
 
 	# convert to integer and return
-	return map(num, pq*lcm(map(den, pq)))
+	return map(numerator, pq*lcm(map(denominator, pq)))
 end
 
 # composed sum of two polynomials, given as coeffs p and q
@@ -96,13 +96,13 @@ function composed_sum(p::Vector{BigInt},q::Vector{BigInt})
 	b = to_newton(q,n,R,x)
 
 	# exp series 
-	ee  = R(Nemo.FlintQQ[Nemo.FlintQQ(1//factorial(BigInt(i))) for i=0:(n-1)])
-	eei = R(Nemo.FlintQQ[Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:(n-1)])
+	ee  = R([Nemo.FlintQQ(1//factorial(BigInt(i))) for i=0:(n-1)])
+	eei = R([Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:(n-1)])
 
 	# multiply newton series and invert
 	m = truncate(hadm(a,ee,R)*hadm(b,ee,R),n)
 	pq = from_newton(to_array(hadm(m,eei,R)))
 
 	# convert to integer and return
-	return map(num, pq*lcm(map(den, pq)))
+	return map(numerator, pq*lcm(map(denominator, pq)))
 end

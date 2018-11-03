@@ -3,15 +3,15 @@ import Base.convert
 import Base.promote_rule
 
 # Algebraic number from integer
-convert{T<:Integer}(::Type{AlgebraicNumber}, x::T) = 
-    AlgebraicNumber(BigInt[-x,one(T)], Complex{BigFloat}(x))
+#convert{T<:Integer}(::Type{AlgebraicNumber}, x::T) = 
+#    AlgebraicNumber(BigInt[-x,one(T)], Complex{BigFloat}(x))
 # Algebraic number from rational
-convert{T<:Integer}(::Type{AlgebraicNumber}, x::Rational{T}) =
-    AlgebraicNumber(BigInt[-num(x), den(x)], Complex{BigFloat}(x))
+#convert{T<:Integer}(::Type{AlgebraicNumber}, x::Rational{T}) =
+#    AlgebraicNumber(BigInt[-num(x), den(x)], Complex{BigFloat}(x))
 
 # promotions
-promote_rule{T<:Integer,S,F}(x::Type{T},          y::Type{AlgebraicNumber{S,F}}) = AlgebraicNumber
-promote_rule{T<:Integer,S,F}(x::Type{Rational{T}},y::Type{AlgebraicNumber{S,F}}) = AlgebraicNumber
+promote_rule(x::Type{T},          y::Type{AlgebraicNumber{S,F}}) where {T<:Integer,S,F} = AlgebraicNumber
+promote_rule(x::Type{Rational{T}},y::Type{AlgebraicNumber{S,F}}) where {T<:Integer,S,F} = AlgebraicNumber
 
 # conversions back
 function convert(::Type{Int64},an::AlgebraicNumber)

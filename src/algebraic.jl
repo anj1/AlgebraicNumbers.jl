@@ -6,7 +6,11 @@
 using Nemo
 import PolynomialRoots
 import PolynomialRoots:roots
-importall Base
+
+import Base.zero,Base.one
+import Base.+,Base.-,Base.*,Base./,Base.inv
+import Base.abs
+import Base.==
 
 # see: http://nemocas.org/nemo-0.4.pdf
 
@@ -15,7 +19,7 @@ importall Base
 # an arbitrary-precision approximation of the number,
 # and prec which specifies the minimal distance between roots of p
 # TODO: apprx has to be complex.
-type AlgebraicNumber{T<:Integer,F<:AbstractFloat} <: Number
+struct AlgebraicNumber{T<:Integer,F<:AbstractFloat} <: Number
 	coeff::Vector{T}
 	apprx::Complex{F}
 	prec::F
@@ -23,11 +27,18 @@ end
 
 # algebraic number from just poly and approximation.
 # computes precision and simplifies as well.
-function AlgebraicNumber{T,F}(coeff::Vector{T}, apprx::Complex{F})
-	an = AlgebraicNumber{T,F}(coeff, apprx, zero(F))
-	calc_precision!(an)
+function AlgebraicNumber(coeff::Vector{T}, apprx::Complex{F}) where {T<:Integer,F<:AbstractFloat}
+	an = AlgebraicNumber{T,F}(coeff, apprx, calc_precision(coeff, apprx))
 	return simplify(an)
 end
+
+# AlgebraicNumber from any integer type
+AlgebraicNumber(x::T) where {T<:Integer} =
+    AlgebraicNumber(BigInt[-x,one(T)], Complex{BigFloat}(x))
+
+# AlgebraicNumber from rationails
+AlgebraicNumber(x::Rational) =
+    AlgebraicNumber(BigInt[-numerator(x), denominator(x)], Complex{BigFloat}(x))
 
 function poly_from_coeff(a)
 	R,x=PolynomialRing(Nemo.FlintZZ,"x")
@@ -45,13 +56,13 @@ end
 
 #get_coeffs(p::Nemo.fmpz_poly) = pointer_to_array(convert(Ptr{Int64}, p.coeffs), (p.length,))
 get_coeffs(p::Nemo.fmpz_poly) = [BigInt(Nemo.coeff(p,i)) for i=0:Nemo.degree(p)]
-prec_roots{T<:Integer}(a::Vector{T}) = PolynomialRoots.roots(convert(Array{BigFloat},a))
+prec_roots(a::Vector{T}) where {T<:Integer} = PolynomialRoots.roots(convert(Array{BigFloat},a))
 # TODO: make sure roots returns distinct roots
 
 # Given an algebraic number, find minimum precision required
 # to specify it among roots of an.p
 # TODO: handle case of repeated roots precisely
-function calc_precision!(an::AlgebraicNumber)
+function calc_precision(coeff::Vector{T}, apprx::Complex{F}) where {T<:Integer,F<:AbstractFloat}
 	# compute smallest distance between all pairs of elements in x
 	function min_pairwise_dist(x)
 		biginf = convert(BigFloat,Inf)
@@ -65,19 +76,16 @@ function calc_precision!(an::AlgebraicNumber)
 	end
 
 	# first, find all roots of p
-	rts = prec_roots(an.coeff)
+	rts = prec_roots(coeff)
 
 	# first, trivial case
 	if length(rts)==1
-		an.prec = convert(BigFloat, Inf)
-		return
+		return convert(BigFloat, Inf)
 	end
 
 	# find minimum pairwise distance between roots;
 	# multiply by 0.5 safety factor
-	dist = 0.5*min_pairwise_dist(rts)
-	an.prec = dist
-	return
+	return 0.5*min_pairwise_dist(rts)
 end
 
 
@@ -95,7 +103,8 @@ function simplify(an::AlgebraicNumber)
 	R, x = PolynomialRing(Nemo.FlintZZ, "x")
 	p = R(map(Nemo.FlintZZ, an.coeff))
 	fctr_dict = Nemo.factor(p)
-	fctrs = keys(fctr_dict)
+	#fctrs = keys(fctr_dict)
+	fctrs = [p for (p,e) in fctr_dict]
 
 	# first, trivial case
 	if length(fctrs)==1
@@ -104,12 +113,12 @@ function simplify(an::AlgebraicNumber)
 			return AlgebraicNumber(get_coeffs(first(fctrs)),an.apprx,an.prec)
 		end
 		# reducible case
-		an = AlgebraicNumber(get_coeffs(first(fctrs)),an.apprx,an.prec)
-		calc_precision!(an)  # re-calculate precision
-		return an
+		coeffs1 = get_coeffs(first(fctrs))
+		apprx1  = an.apprx
+		return AlgebraicNumber(coeffs1,apprx1,calc_precision(coeffs1,apprx1))
 	end
 	# case where more than one factor exists
-	mindists = [minimum(abs(an.apprx .- prec_roots(get_coeffs(fctr)))) for fctr in fctrs]
+	mindists = [minimum(abs.(an.apprx .- prec_roots(get_coeffs(fctr)))) for fctr in fctrs]
 	(newprec, i) = findmin(mindists)
 	fctr = collect(fctrs)[i]
 	an = AlgebraicNumber(get_coeffs(fctr),an.apprx,newprec)
@@ -120,9 +129,9 @@ function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	cf1 = an1.coeff
 	cf2 = an2.coeff
 	(cf1/cf1[end])==(cf2/cf2[end]) || return false 
-	calc_precision!(an1)
-	calc_precision!(an2)
-	return abs(an1.apprx-an2.apprx)<min(an1.prec,an2.prec)
+	prec1 = calc_precision(an1.coeff, an1.apprx)
+	prec2 = calc_precision(an2.coeff, an2.apprx)
+	return abs(an1.apprx-an2.apprx)<min(prec1,prec2)
 end
 
 inv(an::AlgebraicNumber) = AlgebraicNumber(reverse(an.coeff), inv(an.apprx))
