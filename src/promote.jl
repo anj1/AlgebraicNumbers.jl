@@ -17,7 +17,7 @@ promote_rule(x::Type{Rational{T}},y::Type{AlgebraicNumber{S,F}}) where {T<:Integ
 function convert(::Type{Int64},an::AlgebraicNumber)
 	c = an.coeff
 	if length(c)==2 && abs(c[2])==1
-		return convert(Int64, c[1]*c[2])
+		return convert(Int64, -c[1]*c[2])
 	else
 		throw(InexactError())
 	end
