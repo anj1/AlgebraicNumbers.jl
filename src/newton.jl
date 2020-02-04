@@ -54,7 +54,7 @@ to_array(p) = Rational{BigInt}[Rational(coeff(p,i)) for i=0:Nemo.degree(p)]
 function from_newton(tr::Vector{T}) where {T<:Number}
 	# special case
 	if tr==[1]
-		return [0,1]
+		return T[0,1]
 	end
 	n = length(tr)
 	c = Array{T}(UndefInitializer(),n)
