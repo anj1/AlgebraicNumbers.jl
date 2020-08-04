@@ -1,0 +1,17 @@
+name = "AlgebraicNumbers"
+uuid = "e86d093a-a386-599e-b7c7-df0420c8bcba"
+authors = ["Al Nejati"]
+version = "0.1.1"
+
+[deps]
+Nemo = "2edaba10-b0f1-5616-af89-8c11ac63239a"
+PolynomialRoots = "3a141323-8675-5d76-9d11-e1df1406c778"
+
+[compat]
+julia = "1.0"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
