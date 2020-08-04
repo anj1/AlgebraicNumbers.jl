@@ -66,7 +66,7 @@ prec_roots(a::Vector{T}) where {T<:Integer} = PolynomialRoots.roots(convert(Arra
 function calc_precision(coeff::Vector{T}, apprx::Complex{F}) where {T<:Integer,F<:AbstractFloat}
 	# compute smallest distance between all pairs of elements in x
 	function min_pairwise_dist(x)
-		biginf = convert(BigFloat,Inf)
+		biginf = convert(F,Inf)
 		n = length(x)
 		if n<=1
 			return Inf
@@ -81,12 +81,12 @@ function calc_precision(coeff::Vector{T}, apprx::Complex{F}) where {T<:Integer,F
 
 	# first, trivial case
 	if length(rts)==1
-		return convert(BigFloat, Inf)
+		return convert(F, Inf)
 	end
 
 	# find minimum pairwise distance between roots;
 	# multiply by 0.5 safety factor
-	return 0.5*min_pairwise_dist(rts)
+	return 0.5*min_pairwise_dist(convert(Vector{Complex{F}},rts))
 end
 
 
