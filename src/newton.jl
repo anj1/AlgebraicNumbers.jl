@@ -98,7 +98,7 @@ function composed_sum(p::Vector{BigInt},q::Vector{BigInt})
 	eei = R([Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:n])
 
 	# multiply newton series and invert
-	m = truncate(hadm(a,ee,R)*hadm(b,ee,R),n+1)
+	m = mullow(hadm(a,ee,R),hadm(b,ee,R),n+1)
 	pq = from_newton(to_array(hadm(m,eei,R)))
 
 	# convert to integer and return
