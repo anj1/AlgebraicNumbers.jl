@@ -115,7 +115,8 @@ test_real_imag()
 test_pow2()
 #test_show()
 
-@test AlgebraicNumber(1)+sqrt(AlgebraicNumber(-1)) != AlgebraicNumber(2) # see issue #5
+# testcase of issue #5
+@test AlgebraicNumber(1)+sqrt(AlgebraicNumber(-1)) != AlgebraicNumber(2)
 
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
@@ -123,15 +124,14 @@ test_pow2()
 # an = simplify(an)
 # @show an.p  (should be x^2-2)
 
+# test multiplication of square roots
+sqrt2 = root(AlgebraicNumber(2),2)
+sqrt3 = root(AlgebraicNumber(3),2)
+sqrt6=sqrt2*sqrt3
+sqrt6_ = root(AlgebraicNumber(6),2)
+@test sqrt6 == sqrt6_
 
-# sqrt2 = root(AlgebraicNumber(2),2)
-# sqrt3 = root(AlgebraicNumber(3),2)
-# sqrt6=sqrt2*sqrt3
-# sqrt6_ = root(AlgebraicNumber(6),2)
-# calc_precision!(sqrt6_)
-# @show sqrt6 == sqrt6_
-
-# this little example has got me stumped.
-# an=root(root(AlgebraicNumber(3),2) + AlgebraicNumber(-1),2)
-# b = an*an
-# b.coeff and b.apprx don't match up!
+#
+an=root(root(AlgebraicNumber(3),2) + AlgebraicNumber(-1),2)
+b = an*an
+@test abs(AlgebraicNumbers.confirm_algnumber(b)) < 1e-10
