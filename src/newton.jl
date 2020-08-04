@@ -1,5 +1,3 @@
-using Nemo
-
 # _Fast_ composed sums and composed products of polynomials,
 # using the algorithm described in:
 # "Fast computation of special resultants"
