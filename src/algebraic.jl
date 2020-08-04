@@ -3,9 +3,7 @@
 # And also arithmetic on algebraic numbers,
 # including +, -, *, /, and radicals.
 
-using Nemo
 import PolynomialRoots
-import PolynomialRoots:roots
 
 import Base.zero,Base.one
 import Base.+,Base.-,Base.*,Base./,Base.inv
@@ -123,13 +121,13 @@ function simplify(an::AlgebraicNumber)
 	(newprec, i) = findmin(mindists)
 	fctr = collect(fctrs)[i]
 	an = AlgebraicNumber(get_coeffs(fctr),an.apprx,newprec)
-	return an 
+	return an
 end
 
 function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	cf1 = an1.coeff
 	cf2 = an2.coeff
-	(cf1/cf1[end])==(cf2/cf2[end]) || return false 
+	(cf1/cf1[end])==(cf2/cf2[end]) || return false
 	prec1 = calc_precision(an1.coeff, an1.apprx)
 	prec2 = calc_precision(an2.coeff, an2.apprx)
 	return abs(an1.apprx-an2.apprx)<min(prec1,prec2)
@@ -154,17 +152,17 @@ function root(an::AlgebraicNumber,n::Int64)
 	return AlgebraicNumber(interleave(an.coeff, n-1), an.apprx^(1/n))
 end
 
-import Base.sqrt 
+import Base.sqrt
 import Base.cbrt
 sqrt(an::AlgebraicNumber) = root(an,2)
 cbrt(an::AlgebraicNumber) = root(an,3)
 
 # TODO: special, more efficient cases for ^2 and ^3
 function pow2(an::AlgebraicNumber)
-	cfs = an.coeff 
+	cfs = an.coeff
 	# first check if it is already in the form of a square root.
 	if all(cfs[2:2:end] .== 0)
-		pp_cfs = cfs 
+		pp_cfs = cfs
 	else
 		cfs2 = [iseven(i) ? -cfs[i] : cfs[i] for i=1:length(cfs)]
 		pp = poly_from_coeff(cfs)*poly_from_coeff(cfs2)
@@ -186,8 +184,8 @@ function *(an1::AlgebraicNumber,an2::AlgebraicNumber)
 		return zero(AlgebraicNumber)
 	end
 	# check if p==q, if then use a more optimized and correct routine
-	#if an1.coeff == an2.coeff 
-	#	return 
+	#if an1.coeff == an2.coeff
+	#	return
 	#end
 	p = composed_product(an1.coeff, an2.coeff)
 	return AlgebraicNumber(p, an1.apprx * an2.apprx)
