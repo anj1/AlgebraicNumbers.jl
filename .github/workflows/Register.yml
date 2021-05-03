@@ -1,0 +1,16 @@
+name: Register Package
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to register or component to bump
+        required: true
+
+jobs:
+  Register:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Project.toml and trigger Registrator
+        uses: julia-actions/RegisterAction@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
