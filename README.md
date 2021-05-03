@@ -1,8 +1,14 @@
 AlgebraicNumbers.jl
 ------
 
-[![Build Status](https://travis-ci.org/anj1/AlgebraicNumbers.jl.svg?branch=master)](https://travis-ci.org/anj1/AlgebraicNumbers.jl)
-[![Coverage Status](https://coveralls.io/repos/github/anj1/AlgebraicNumbers.jl/badge.svg?branch=master)](https://coveralls.io/github/anj1/AlgebraicNumbers.jl?branch=master)
+<!-- [![Build Status](https://travis-ci.org/anj1/AlgebraicNumbers.jl.svg?branch=master)](https://travis-ci.org/anj1/AlgebraicNumbers.jl)
+[![Coverage Status](https://coveralls.io/repos/github/anj1/AlgebraicNumbers.jl/badge.svg?branch=master)](https://coveralls.io/github/anj1/AlgebraicNumbers.jl?branch=master) -->
+[![Build Status](https://github.com/fkastner/AlgebraicNumbers.jl/workflows/CI/badge.svg)](https://github.com/fkastner/AlgebraicNumbers.jl/actions)
+[![Coverage Status](https://coveralls.io/repos/github/fkastner/AlgebraicNumbers.jl/badge.svg?branch=master)](https://coveralls.io/github/fkastner/AlgebraicNumbers.jl?branch=master)
+
+> This package is a fork of [anj1/AlgebraicNumbers.jl](https://github.com/anj1/AlgebraicNumbers.jl)!
+> I just fixed some bugs and registered it, so it is usable with your favourite Julia version.
+> The implementation is due to @anj1.
 
 #### `sqrt(2)^2 == 2`
 
