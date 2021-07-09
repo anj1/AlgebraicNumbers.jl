@@ -8,6 +8,7 @@ import Base.promote_rule
 # Algebraic number from rational
 #convert{T<:Integer}(::Type{AlgebraicNumber}, x::Rational{T}) =
 #    AlgebraicNumber(BigInt[-num(x), den(x)], Complex{BigFloat}(x))
+convert(::Type{T}, x::Number) where {T<:AlgebraicNumber} = AlgebraicNumber(x)
 
 # promotions
 promote_rule(x::Type{T},          y::Type{AlgebraicNumber{S,F}}) where {T<:Integer,S,F} = AlgebraicNumber
