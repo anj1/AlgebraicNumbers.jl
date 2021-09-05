@@ -1,7 +1,7 @@
 AlgebraicNumbers.jl
 ------
 
-[![Build Status](https://travis-ci.org/anj1/AlgebraicNumbers.jl.svg?branch=master)](https://travis-ci.org/anj1/AlgebraicNumbers.jl)
+[![Build Status](https://github.com/anj1/AlgebraicNumbers.jl/workflows/CI/badge.svg)](https://github.com/anj1/AlgebraicNumbers.jl/actions)
 [![Coverage Status](https://coveralls.io/repos/github/anj1/AlgebraicNumbers.jl/badge.svg?branch=master)](https://coveralls.io/github/anj1/AlgebraicNumbers.jl?branch=master)
 
 #### `sqrt(2)^2 == 2`

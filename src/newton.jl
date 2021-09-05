@@ -1,7 +1,5 @@
-using Nemo 
-
 # _Fast_ composed sums and composed products of polynomials,
-# using the algorithm described in: 
+# using the algorithm described in:
 # "Fast computation of special resultants"
 # by Bostan, Flajolet, Salvy, and Schost
 
@@ -25,7 +23,7 @@ function to_newton(coeffs::Vector{BigInt},n,R,x)
 	d = length(coeffs)-1
 	a_cfs = reverse(derivative(coeffs))
 	b_cfs = reverse(coeffs)
-	
+
 	# initialize power series polynomials
 	a = R(map(Nemo.FlintQQ, a_cfs))
 	b = R(map(Nemo.FlintQQ, b_cfs))
@@ -54,7 +52,7 @@ to_array(p) = Rational{BigInt}[Rational(coeff(p,i)) for i=0:Nemo.degree(p)]
 function from_newton(tr::Vector{T}) where {T<:Number}
 	# special case
 	if tr==[1]
-		return [0,1]
+		return T[0,1]
 	end
 	n = length(tr)
 	c = Array{T}(UndefInitializer(),n)
@@ -64,13 +62,13 @@ function from_newton(tr::Vector{T}) where {T<:Number}
 		c[end-k] = next_c
 	end
 	return c
-end 
+end
 
 # Hadamard (element-wise) product of two polynomials
 function hadm(p,q,R)
-	n = max(Nemo.degree(p),Nemo.degree(q))
+	n = min(Nemo.degree(p),Nemo.degree(q))
 	R([Nemo.coeff(p,i)*Nemo.coeff(q,i) for i=0:n])
-end 
+end
 
 # composed product of two polynomials, given as coeffs p and q
 function composed_product(p::Vector{BigInt},q::Vector{BigInt})
@@ -95,12 +93,12 @@ function composed_sum(p::Vector{BigInt},q::Vector{BigInt})
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 
-	# exp series 
-	ee  = R([Nemo.FlintQQ(1//factorial(BigInt(i))) for i=0:(n-1)])
-	eei = R([Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:(n-1)])
+	# exp series
+	ee  = R([Nemo.FlintQQ(1//factorial(BigInt(i))) for i=0:n])
+	eei = R([Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:n])
 
 	# multiply newton series and invert
-	m = truncate(hadm(a,ee,R)*hadm(b,ee,R),n)
+	m = mullow(hadm(a,ee,R),hadm(b,ee,R),n+1)
 	pq = from_newton(to_array(hadm(m,eei,R)))
 
 	# convert to integer and return

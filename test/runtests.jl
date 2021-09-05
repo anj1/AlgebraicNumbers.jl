@@ -1,5 +1,5 @@
 using Test
-using AlgebraicNumbers 
+using AlgebraicNumbers
 
 function test1(n)
 	coeff = rand(1:10,n+1)
@@ -26,7 +26,7 @@ function test2(n)
 	coeff = rand(1:10,n+1)
 	b = AlgebraicNumber(coeff, BigFloat(0.0), BigFloat(0.0))
 	b.apprx = roots(b.coeff)[rand(1:n)]
-	calc_precision!(b)	
+	calc_precision!(b)
 
 	c = a*b
 	abs(roots(c.coeff) .- c.apprx)
@@ -36,10 +36,12 @@ function test3()
 	a = sqrt(AlgebraicNumber(2))
 	b = sqrt(AlgebraicNumber(3))
 	axb = a*b
-	@show axb, axb.coeff
-	apb = a+b 
-	@show apb, apb.coeff
-end 
+	# @show axb, axb.coeff
+	@test abs(AlgebraicNumbers.confirm_algnumber(axb)) < 1e-10
+	apb = a+b
+	# @show apb, apb.coeff
+	@test abs(AlgebraicNumbers.confirm_algnumber(apb)) < 1e-10
+end
 
 function test4()
 	# simple test
@@ -103,6 +105,8 @@ function test_show()
 	@test convert(UTF8String, takebuf_array(a)) == "≈1.0 + 1.0im"
 end
 
+
+test3()
 test4()
 test5()
 plastic_constant_test()
@@ -111,21 +115,23 @@ test_real_imag()
 test_pow2()
 #test_show()
 
+# testcase of issue #5
+@test AlgebraicNumber(1)+sqrt(AlgebraicNumber(-1)) != AlgebraicNumber(2)
+
 # sqrt2 = root(AlgebraicNumber(2),2)
 # an.p = (x^2-2)*(x^2-3)
 # calc_precision!(an)
 # an = simplify(an)
 # @show an.p  (should be x^2-2)
 
+# test multiplication of square roots
+sqrt2 = root(AlgebraicNumber(2),2)
+sqrt3 = root(AlgebraicNumber(3),2)
+sqrt6=sqrt2*sqrt3
+sqrt6_ = root(AlgebraicNumber(6),2)
+@test sqrt6 == sqrt6_
 
-# sqrt2 = root(AlgebraicNumber(2),2)
-# sqrt3 = root(AlgebraicNumber(3),2)
-# sqrt6=sqrt2*sqrt3
-# sqrt6_ = root(AlgebraicNumber(6),2)
-# calc_precision!(sqrt6_)
-# @show sqrt6 == sqrt6_
-
-# this little example has got me stumped.
-# an=root(root(AlgebraicNumber(3),2) + AlgebraicNumber(-1),2)
-# b = an*an
-# b.coeff and b.apprx don't match up!
+#
+an=root(root(AlgebraicNumber(3),2) + AlgebraicNumber(-1),2)
+b = an*an
+@test abs(AlgebraicNumbers.confirm_algnumber(b)) < 1e-10

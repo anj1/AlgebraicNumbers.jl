@@ -1,5 +1,8 @@
 module AlgebraicNumbers
 
+using Nemo
+import PolynomialRoots
+
 export AlgebraicNumber
 export *,+,-,/,^,root,==,inv
 export sqrt,cbrt
