@@ -101,8 +101,11 @@ end
 function test_show()
 	a = IOBuffer()
 	show(a, sqrt(AlgebraicNumber(-1))+1)
+	@test String(take!(a)) == "1.0 + 1.0im"
 
-	@test convert(UTF8String, takebuf_array(a)) == "≈1.0 + 1.0im"
+	a = IOBuffer()
+	show(a, sqrt(AlgebraicNumber(2)))
+	@test String(take!(a))[1] == '≈'
 end
 
 
@@ -113,7 +116,7 @@ plastic_constant_test()
 test_abs()
 test_real_imag()
 test_pow2()
-#test_show()
+test_show()
 
 # testcase of issue #5
 @test AlgebraicNumber(1)+sqrt(AlgebraicNumber(-1)) != AlgebraicNumber(2)

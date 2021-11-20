@@ -27,15 +27,7 @@ sqrt(AlgebraicNumber(x))^2 == x
 
 Here, `AlgebraicNumber` is just a constructor that takes a number (either an integer or a rational number) and produces an algebraic number.
 
-Note that if you display an algebraic number, you might get something like:
-```julia
-julia> AlgebraicNumber(1)
-≈1.0 + 0.0im
-```
-
-That is, something that looks like an approximate complex number, not an exact number. This is *only* the library's way of *displaying* algebraic numbers, and it's simply because in general it is impossible to represent an algebraic number exactly in decimal notation no matter how many digits you display! Internally, algebraic numbers are represented exactly, but they are not represented using decimal or floating-point representation (more on internal representation below).
-
-Indeed, you can do arithmetic on algebraic numbers and all results will be represented exactly:
+You can do arithmetic on algebraic numbers and all results will be represented exactly:
 
 ```julia
 sqrt2 = sqrt(AlgebraicNumber(2))
@@ -57,6 +49,22 @@ assert((y^2 - 1)^2 == 6)
 ```
 
 Even *more* generally, arbitrary root-taking operations are possible. That is, you can represent the root of any polynomial (with integer, rational, or algebraic coefficients) as an algebraic number, even if that root doesn't have a representation in terms of a sequence of +, -, /, *, and root-taking operations.
+
+#### Displaying algebraic numbers
+
+Note that sometimes when displaying an algebraic number, you might get a '≈' symbol, like:
+```julia
+julia> sqrt(AlgebraicNumber(2))
+≈1.4142135623730951 + 0.0im
+```
+
+That is, something that looks like an approximate complex number, not an exact number. This is *only* the library's way of *displaying* algebraic numbers, and it's simply because in general it is impossible to represent an algebraic number exactly in decimal notation no matter how many digits you display! Internally, algebraic numbers are represented exactly, but they are not represented using decimal or floating-point representation (more on internal representation below).
+
+When displaying algebraic numbers that *can* be represented exactly, they are shown as-is:
+```
+julia> AlgebraicNumber(2)
+2.0 + 0.0im
+```
 
 #### Internal implementation
 
