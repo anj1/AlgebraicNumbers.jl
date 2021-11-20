@@ -39,18 +39,29 @@ AlgebraicNumber(x::T) where {T<:Integer} =
 AlgebraicNumber(x::Rational) =
     AlgebraicNumber(BigInt[-numerator(x), denominator(x)], Complex{BigFloat}(x))
 
+AlgebraicNumber(x::Complex) =
+    AlgebraicNumber(real(x)) + AlgebraicNumber(imag(x))*root(AlgebraicNumber(-1),2)
+
+
 function poly_from_coeff(a)
 	R,x=PolynomialRing(Nemo.FlintZZ,"x")
 	sum([a[i]*x^(i-1) for i=1:length(a)])
 end
 
+function is_displayed_exactly(an)
+	io = IOBuffer()
+	show(io,convert(Complex{Float64},an.apprx))
+	displ = String(take!(io))
+	from_displ = AlgebraicNumber(Complex{Rational{BigInt}}(parse(Complex{BigFloat}, displ)))
+	from_displ==an, displ
+end
+
 import Base.show
 # TODO: only show up to precision
 function show(io::IO, an::AlgebraicNumber)
-	print(io,"≈")
-	#ndigits = max(10, round(Int,ceil(convert(Float64,log(an.prec)/log(10)))))
-	show(io,convert(Complex{Float64},an.apprx))
-	#print(io,"...")
+	display_exact, displ = is_displayed_exactly(an)
+	display_exact || print(io, "≈")
+	print(io, displ)
 end
 
 #get_coeffs(p::Nemo.fmpz_poly) = pointer_to_array(convert(Ptr{Int64}, p.coeffs), (p.length,))
