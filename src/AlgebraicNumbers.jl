@@ -11,6 +11,7 @@ export pow2
 
 
 include("algebraic.jl")
+include("trig.jl")
 include("promote.jl")
 include("newton.jl")
 include("inv_totient.jl")
