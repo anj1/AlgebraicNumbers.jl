@@ -63,27 +63,3 @@ function inv_totient(x::T) where T <: Integer
 
     return invs
 end
-
-# Test the correctness of inv_totient for all totients up to m
-function test_inv_totient(m)
-    # Lower bound on phi(n)==m,
-    # And thus worst-case maximum range we need to consider.
-    n = 2*m^2
-
-    tots = [totient(i) for i=1:n]
-
-    for i = 1:m
-        gold = findall(==(i), tots)
-        test = sort(collect(inv_totient(i)))
-
-        if length(gold) != length(test)
-            return false 
-        end 
-
-        if !all(gold .== test)
-            return false
-        end 
-    end 
-
-    return true
-end

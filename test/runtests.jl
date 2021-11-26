@@ -1,5 +1,6 @@
 using Test
 using AlgebraicNumbers
+import AlgebraicNumbers.inv_totient
 
 function test1(n)
 	coeff = rand(1:10,n+1)
@@ -123,6 +124,34 @@ function test_trig_alg()
 
 	@test asin_alg(AlgebraicNumber(3//2)) == Nothing
 	@test acos_alg(AlgebraicNumber(3//2)) == Nothing
+end 
+
+function totient(x::T) where T <: Integer 
+	prod([(fac.first^(fac.second-1))*(fac.first-1) for fac in Nemo.factor(x)])
+end
+
+# Test the correctness of inv_totient for all totients up to m
+function check_inv_totient(m::T) where T <: Integer
+    # Lower bound on phi(n)==m,
+    # And thus worst-case maximum range we need to consider.
+    n = 2*m^2
+
+    tots = [totient(i) for i=1:n]
+
+    for i = 1:m
+        _gold = findall(==(i), tots)
+        _test = sort(collect(inv_totient(i)))
+
+        length(_gold) == length(_test) || return false
+
+        all(_gold .== _test) || return false
+    end 
+
+	return true
+end
+
+function test_inv_totient(m::T) where T <: Integer 
+	@test check_inv_totient(m)
 end 
 
 test3()
