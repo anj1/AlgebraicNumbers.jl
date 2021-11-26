@@ -108,6 +108,22 @@ function test_show()
 	@test String(take!(a))[1] == '≈'
 end
 
+function test_log_alg()
+	@test log_alg(exp_alg(1//9)) == 1//9
+
+	@test log_alg(AlgebraicNumber(2)) == Nothing
+end
+
+function test_trig_alg()
+	@test acos_alg(cos_alg(3//7)) == 3//7
+	@test asin_alg(sin_alg(3//7)) == 3//7
+
+	@test acos_alg(AlgebraicNumber(1)) == 0//1
+	@test asin_alg(AlgebraicNumber(1)) == 1//2
+
+	@test asin_alg(AlgebraicNumber(3//2)) == Nothing
+	@test acos_alg(AlgebraicNumber(3//2)) == Nothing
+end 
 
 test3()
 test4()
@@ -117,6 +133,8 @@ test_abs()
 test_real_imag()
 test_pow2()
 test_show()
+test_log_alg()
+test_trig_alg()
 
 # testcase of issue #5
 @test AlgebraicNumber(1)+sqrt(AlgebraicNumber(-1)) != AlgebraicNumber(2)
