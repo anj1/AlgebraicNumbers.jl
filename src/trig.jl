@@ -42,3 +42,25 @@ function log_alg(a::AlgebraicNumber)
         return Nothing 
     end
 end
+
+function acos_alg(x::AlgebraicNumber)
+    # TODO: check if the number can be made a root of unity.
+
+    # First, make the number a root of unity.
+    y = sqrt(1 - x^2)
+    z = x + sqrt(AlgebraicNumber(-1))*y
+
+    # Now take log 
+    log_alg(z)
+end
+
+function asin_alg(x::AlgebraicNumber)
+    # TODO: check if the number can be made a root of unity.
+
+    # First, make the number a root of unity.
+    y = sqrt(1 - x^2)
+    z = y + sqrt(AlgebraicNumber(-1))*x
+
+    # Now take log 
+    log_alg(z)
+end
