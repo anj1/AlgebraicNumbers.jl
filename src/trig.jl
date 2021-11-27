@@ -1,12 +1,20 @@
 # compute exp(pi*i*q),
 # which is algebraic if q is rational.
 function exp_alg(q::Rational)
-	# first, obtain polynomial
-	p = interleave(BigInt[-1,1], 2*denominator(q)-1)
+    if numerator(q)==0
+        return AlgebraicNumber(1)
+    end
+    
+	# first, obtain minimal polynomial
+    s, x = PolynomialRing(AlgebraicNumbers.Nemo.ZZ, "x")
+    poly = cyclotomic(2*denominator(q), x)
+    coeffs = [convert(BigInt, coeff(poly, i)) for i=0: 2*denominator(q)]
+
 	# now, select root.
 	apprx = exp(im*BigFloat(pi)*q)
-	# Finally, return minimal polynomial w.r.t. that root
-	return AlgebraicNumber(p,apprx)
+
+	# Finally, return polynomial w.r.t. that root
+	return AlgebraicNumber(coeffs, apprx)
 end
 
 cos_alg(q::Rational) = real(exp_alg(q))
