@@ -97,3 +97,26 @@ x = cos_alg(2//5)
 y = (sqrt(AlgebraicNumber(5))-1)/4
 assert(x == y)
 ```
+
+The inverse of these functions also exist. `log_alg(x)` returns log(x)/iπ, which, assuming x is a root of unity, is rational. If x is not a root of unity, this function returns `Nothing`.
+
+```julia
+x = exp_alg(3//7)
+y = log_alg(x)
+assert(y == 3//7)
+```
+
+There are also inverse trigonometric functions `acos_alg` and `asin_alg`. If the input is a trigonometric number, the output will be a rational fraction of π, otherwise the return value will be `Nothing`. These functions are useful when doing various geometric computations.
+
+```julia
+x = sqrt(AlgebraicNumber(3))/2
+assert(acos_alg(x) == 1//6)
+assert(asin_alg(x) == 1//3)
+
+# More complicated example.
+x = sqrt(10 + 2*sqrt(AlgebraicNumber(5)))/4
+assert(acos_alg(x) == 1//10)
+assert(asin_alg(x) == 4//10)
+```
+
+Internally, these functions work by calling `log_alg`. `log_alg` then checks if the polynomial coefficients for the algebraic number are cyclotomic. If this polynomial is the nth cyclotomic polynomial, then the denominator of the result is simply n. The numerator can be calculated by taking the approximate floating-point log of the number and then multiplying by the denominator and rounding to the nearest integer.

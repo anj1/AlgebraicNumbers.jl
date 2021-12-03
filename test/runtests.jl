@@ -1,5 +1,6 @@
 using Test
 using AlgebraicNumbers
+import AlgebraicNumbers.inv_totient
 
 function test1(n)
 	coeff = rand(1:10,n+1)
@@ -108,6 +109,50 @@ function test_show()
 	@test String(take!(a))[1] == '≈'
 end
 
+function test_log_alg()
+	@test log_alg(exp_alg(1//9)) == 1//9
+
+	@test log_alg(AlgebraicNumber(2)) == Nothing
+end
+
+function test_trig_alg()
+	@test acos_alg(cos_alg(3//7)) == 3//7
+	@test asin_alg(sin_alg(3//7)) == 3//7
+
+	@test acos_alg(AlgebraicNumber(1)) == 0//1
+	@test asin_alg(AlgebraicNumber(1)) == 1//2
+
+	@test asin_alg(AlgebraicNumber(3//2)) == Nothing
+	@test acos_alg(AlgebraicNumber(3//2)) == Nothing
+end 
+
+function totient(x::T) where T <: Integer 
+	prod([(fac.first^(fac.second-1))*(fac.first-1) for fac in Nemo.factor(x)])
+end
+
+# Test the correctness of inv_totient for all totients up to m
+function check_inv_totient(m::T) where T <: Integer
+    # Lower bound on phi(n)==m,
+    # And thus worst-case maximum range we need to consider.
+    n = 2*m^2
+
+    tots = [totient(i) for i=1:n]
+
+    for i = 1:m
+        _gold = findall(==(i), tots)
+        _test = sort(collect(inv_totient(i)))
+
+        length(_gold) == length(_test) || return false
+
+        all(_gold .== _test) || return false
+    end 
+
+	return true
+end
+
+function test_inv_totient(m::T) where T <: Integer 
+	@test check_inv_totient(m)
+end 
 
 test3()
 test4()
@@ -117,6 +162,8 @@ test_abs()
 test_real_imag()
 test_pow2()
 test_show()
+test_log_alg()
+test_trig_alg()
 
 # testcase of issue #5
 @test AlgebraicNumber(1)+sqrt(AlgebraicNumber(-1)) != AlgebraicNumber(2)
