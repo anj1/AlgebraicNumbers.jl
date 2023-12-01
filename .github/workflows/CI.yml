@@ -12,7 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.1' # minimal supported
           - '1.6' # current LTS
           - '1' # current stable
           - 'nightly'
@@ -24,7 +23,7 @@ jobs:
     continue-on-error: ${{ matrix.version == 'nightly' }}
     steps:
       - name: Git checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
         with:
