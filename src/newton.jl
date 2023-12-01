@@ -7,7 +7,7 @@
 derivative(c::Vector) = c[2:end] .* (1:length(c)-1)
 
 function polyinv(coeffs::Vector, n)
-	R, x = Nemo.PowerSeriesRing(Nemo.FlintQQ, n, "x")
+	R, x = Nemo.power_series_ring(Nemo.FlintQQ, n, "x")
 	a = R(map(Nemo.FlintQQ, coeffs), length(coeffs), n, 0)
 	ai = inv(a)
 	return Nemo.fmpq[coeff(ai,i) for i=0:n-1]
@@ -74,7 +74,7 @@ end
 function composed_product(p::Vector{BigInt},q::Vector{BigInt})
 	# compute newton series
 	n = (length(p)-1)*(length(q)-1)+1
-	R, x = Nemo.PolynomialRing(Nemo.FlintQQ, "x")
+	R, x = Nemo.polynomial_ring(Nemo.FlintQQ, "x")
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 
@@ -89,7 +89,7 @@ end
 function composed_sum(p::Vector{BigInt},q::Vector{BigInt})
 	# compute newton series
 	n = (length(p)-1)*(length(q)-1)+1
-	R, x = Nemo.PolynomialRing(Nemo.FlintQQ, "x")
+	R, x = Nemo.polynomial_ring(Nemo.FlintQQ, "x")
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 

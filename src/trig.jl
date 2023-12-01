@@ -4,7 +4,7 @@ function exp_alg(q::Rational)
        qh = q/2
 
        # first, obtain minimal polynomial
-       s, x = PolynomialRing(AlgebraicNumbers.Nemo.ZZ, "x")
+       s, x = polynomial_ring(AlgebraicNumbers.Nemo.ZZ, "x")
        poly = cyclotomic(denominator(qh), x)
        coeffs = [convert(BigInt, coeff(poly, i)) for i=0: denominator(qh)]
 
@@ -33,7 +33,7 @@ end
 # which is rational if a is a root of unity.
 # If a is not a root of unity, returns Nothing
 function log_alg(a::AlgebraicNumber)
-	s, x = PolynomialRing(Nemo.ZZ, "x")
+	s, x = polynomial_ring(Nemo.ZZ, "x")
 
 	deg = length(a.coeff)-1
 	poly = s(map(Nemo.ZZ, a.coeff))

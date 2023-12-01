@@ -44,7 +44,7 @@ AlgebraicNumber(x::Complex) =
 
 
 function poly_from_coeff(a)
-	R,x=PolynomialRing(Nemo.FlintZZ,"x")
+	R,x=polynomial_ring(Nemo.FlintZZ,"x")
 	sum([a[i]*x^(i-1) for i=1:length(a)])
 end
 
@@ -64,8 +64,8 @@ function show(io::IO, an::AlgebraicNumber)
 	print(io, displ)
 end
 
-#get_coeffs(p::Nemo.fmpz_poly) = pointer_to_array(convert(Ptr{Int64}, p.coeffs), (p.length,))
-get_coeffs(p::Nemo.fmpz_poly) = [BigInt(Nemo.coeff(p,i)) for i=0:Nemo.degree(p)]
+#get_coeffs(p::Nemo.ZZPolyRingElem) = pointer_to_array(convert(Ptr{Int64}, p.coeffs), (p.length,))
+get_coeffs(p::Nemo.ZZPolyRingElem) = [BigInt(Nemo.coeff(p,i)) for i=0:Nemo.degree(p)]
 prec_roots(a::Vector{T}) where {T<:Integer} = PolynomialRoots.roots(convert(Array{BigFloat},a))
 # TODO: make sure roots returns distinct roots
 
@@ -110,7 +110,7 @@ function simplify(an::AlgebraicNumber)
 	end
 
 	# Otherwise, factor out.
-	R, x = PolynomialRing(Nemo.FlintZZ, "x")
+	R, x = polynomial_ring(Nemo.FlintZZ, "x")
 	p = R(map(Nemo.FlintZZ, an.coeff))
 	fctr_dict = Nemo.factor(p)
 	#fctrs = keys(fctr_dict)
@@ -186,7 +186,7 @@ end
 
 # partially simplify a polynomial b
 # eliminating repeated factors
-reduce_repeated_factors(p::Nemo.fmpz_poly) = prod(keys(Nemo.factor(p)))
+reduce_repeated_factors(p::Nemo.ZZPolyRingElem) = prod(keys(Nemo.factor(p)))
 
 # multiplication
 function *(an1::AlgebraicNumber,an2::AlgebraicNumber)

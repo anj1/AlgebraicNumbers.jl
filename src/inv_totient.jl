@@ -41,7 +41,7 @@ function inv_totient(x::T) where T <: Integer
 		# Find all divisors of x of the form (p^0)*(p-1), where p is a prime
 		for divisor in all_divisors(factors)
 			d = divisor+1
-			if Nemo.isprime(d) && d > factor_list[end][1]
+			if Nemo.is_prime(d) && d > factor_list[end][1]
 				pair = (d, 0)
 				totient_reps(div(x, divisor), cat(factor_list, pair, dims=1))
 			end
