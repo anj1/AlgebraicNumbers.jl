@@ -10,7 +10,7 @@ PolynomialRoots = "3a141323-8675-5d76-9d11-e1df1406c778"
 [compat]
 Nemo = "0.34, 0.35, 0.36, 0.37, 0.38"
 PolynomialRoots = "0.2, 1.0"
-julia = "1.1"
+julia = "1.6"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
