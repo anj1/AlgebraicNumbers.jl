@@ -78,7 +78,7 @@ function calc_precision(coeff::Vector{T}, apprx::Complex{F}) where {T<:Integer,F
 		biginf = convert(F,Inf)
 		n = length(x)
 		if n<=1
-			return Inf
+			return biginf
 		else
 			pdists = [i < j ? abs(x[i]-x[j]) : biginf for i=1:n,j=1:n]
 			return minimum(pdists)
@@ -131,8 +131,7 @@ function simplify(an::AlgebraicNumber)
 	mindists = [minimum(abs.(an.apprx .- prec_roots(get_coeffs(fctr)))) for fctr in fctrs]
 	(newprec, i) = findmin(mindists)
 	fctr = collect(fctrs)[i]
-	an = AlgebraicNumber(get_coeffs(fctr),an.apprx,newprec)
-	return an
+	return AlgebraicNumber(get_coeffs(fctr),an.apprx,newprec)
 end
 
 function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)

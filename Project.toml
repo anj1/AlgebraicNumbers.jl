@@ -1,7 +1,7 @@
 name = "AlgebraicNumbers"
 uuid = "e86d093a-a386-599e-b7c7-df0420c8bcba"
 authors = ["Al Nejati", "Felix Kastner"]
-version = "0.1.8"
+version = "0.1.9"
 
 [deps]
 Nemo = "2edaba10-b0f1-5616-af89-8c11ac63239a"
