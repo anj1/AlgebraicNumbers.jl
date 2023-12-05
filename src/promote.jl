@@ -20,6 +20,6 @@ function convert(::Type{Int64},an::AlgebraicNumber)
 	if length(c)==2 && abs(c[2])==1
 		return convert(Int64, -c[1]*c[2])
 	else
-		throw(InexactError())
+		throw(InexactError(:convert, Int64, an))
 	end
 end
