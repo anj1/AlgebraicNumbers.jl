@@ -13,6 +13,7 @@ convert(::Type{T}, x::Number) where {T<:AlgebraicNumber} = AlgebraicNumber(x)
 # promotions
 promote_rule(x::Type{T},          y::Type{AlgebraicNumber{S,F}}) where {T<:Integer,S,F} = AlgebraicNumber
 promote_rule(x::Type{Rational{T}},y::Type{AlgebraicNumber{S,F}}) where {T<:Integer,S,F} = AlgebraicNumber
+promote_rule(::Type{Bool}, ::Type{AlgebraicNumber{S, F}}) where {S, F} = AlgebraicNumber
 
 # conversions back
 function convert(::Type{Int64},an::AlgebraicNumber)
