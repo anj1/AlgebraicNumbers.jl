@@ -8,7 +8,7 @@ Nemo = "2edaba10-b0f1-5616-af89-8c11ac63239a"
 PolynomialRoots = "3a141323-8675-5d76-9d11-e1df1406c778"
 
 [compat]
-Nemo = "0.34, 0.35, 0.36, 0.37, 0.38"
+Nemo = "0.34, 0.35, 0.36, 0.37, 0.38, 0.39"
 PolynomialRoots = "0.2, 1.0"
 julia = "1.6"
 
