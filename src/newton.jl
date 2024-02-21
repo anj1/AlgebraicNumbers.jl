@@ -10,7 +10,7 @@ function polyinv(coeffs::Vector, n)
 	R, x = Nemo.power_series_ring(Nemo.FlintQQ, n, "x")
 	a = R(map(Nemo.FlintQQ, coeffs), length(coeffs), n, 0)
 	ai = inv(a)
-	return Nemo.fmpq[coeff(ai,i) for i=0:n-1]
+	return Nemo.QQFieldElem[coeff(ai,i) for i=0:n-1]
 end
 
 # compute newton power series of polynomial given with coefficients coeff,
