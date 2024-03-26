@@ -24,3 +24,8 @@ function convert(::Type{Int64},an::AlgebraicNumber)
 		throw(InexactError(:convert, Int64, an))
 	end
 end
+
+# floats
+promote_rule(::Type{<:AlgebraicNumber}, ::Type{T}) where T <: AbstractFloat = T
+(::Type{T})(x::AlgebraicNumber) where T<:AbstractFloat = T(x.apprx)
+Base.AbstractFloat(x::AlgebraicNumber) = AbstractFloat(x.approx)
