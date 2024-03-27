@@ -25,7 +25,10 @@ function convert(::Type{Int64},an::AlgebraicNumber)
 	end
 end
 
-# floats
-promote_rule(::Type{<:AlgebraicNumber}, ::Type{T}) where T <: AbstractFloat = T
+# conversions and promotions from algebraic number types to floats
+promote_rule(::Type{<:AlgebraicNumber}, ::Type{T}) where T <: AbstractFloat = Complex{T}
 (::Type{T})(x::AlgebraicNumber) where T<:AbstractFloat = T(x.apprx)
 Base.AbstractFloat(x::AlgebraicNumber) = AbstractFloat(x.approx)
+
+promote_rule(::Type{<:AlgebraicNumber}, ::Type{Complex{T}}) where T<:AbstractFloat = Complex{T}
+(::Type{Complex{T}})(x::AlgebraicNumber) where T<:AbstractFloat = Complex{T}(x.approx)
