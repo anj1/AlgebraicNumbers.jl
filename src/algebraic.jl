@@ -32,12 +32,13 @@ function AlgebraicNumber(coeff::Vector{T}, apprx::Complex{F}) where {T<:Integer,
 end
 
 # AlgebraicNumber from any integer type
+# Convert x to BigInt before negating in case it is unsigned
 AlgebraicNumber(x::T) where {T<:Integer} =
-    AlgebraicNumber(BigInt[-x,one(T)], Complex{BigFloat}(x))
+    AlgebraicNumber(BigInt[-BigInt(x),one(T)], Complex{BigFloat}(x))
 
 # AlgebraicNumber from rationails
 AlgebraicNumber(x::Rational) =
-    AlgebraicNumber(BigInt[-numerator(x), denominator(x)], Complex{BigFloat}(x))
+    AlgebraicNumber(BigInt[-BigInt(numerator(x)), denominator(x)], Complex{BigFloat}(x))
 
 AlgebraicNumber(x::Complex) =
     AlgebraicNumber(real(x)) + AlgebraicNumber(imag(x))*root(AlgebraicNumber(-1),2)
@@ -234,4 +235,5 @@ function alg_roots(coeff::Vector{Integer})
 end
 
 confirm_algnumber(b) = sum(b.coeff .* [b.apprx^(i-1) for i=1:length(b.coeff)])
+
 
