@@ -9,7 +9,7 @@ import Base.zero,Base.one
 import Base.+,Base.-,Base.*,Base./,Base.inv
 import Base.abs,Base.conj
 import Base.real,Base.imag
-import Base.==
+import Base.==, Base.hash
 
 # see: http://nemocas.org/nemo-0.4.pdf
 
@@ -143,6 +143,8 @@ function ==(an1::AlgebraicNumber,an2::AlgebraicNumber)
 	prec2 = calc_precision(an2.coeff, an2.apprx)
 	return abs(an1.apprx-an2.apprx)<min(prec1,prec2)
 end
+
+hash(an::AlgebraicNumber, h::UInt) = hash(an.coeff/an.coeff[end], h)
 
 inv(an::AlgebraicNumber) = AlgebraicNumber(reverse(an.coeff), inv(an.apprx))
 
