@@ -31,7 +31,7 @@ end
 
 # compute log(a)/(pi*i),
 # which is rational if a is a root of unity.
-# If a is not a root of unity, returns Nothing
+# If a is not a root of unity, returns nothing
 function log_alg(a::AlgebraicNumber)
 	s, x = polynomial_ring(Nemo.ZZ, "x")
 
@@ -45,7 +45,7 @@ function log_alg(a::AlgebraicNumber)
 		num = round(Int, denom*imag(log(a.apprx)/pi))
 		return num//denom
 	else 
-		return Nothing 
+		return nothing 
 	end
 end
 

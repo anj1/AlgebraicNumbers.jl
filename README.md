@@ -98,7 +98,7 @@ y = (sqrt(AlgebraicNumber(5))-1)/4
 assert(x == y)
 ```
 
-The inverse of these functions also exist. `log_alg(x)` returns log(x)/iπ, which, assuming x is a root of unity, is rational. If x is not a root of unity, this function returns `Nothing`.
+The inverse of these functions also exist. `log_alg(x)` returns log(x)/iπ, which, assuming x is a root of unity, is rational. If x is not a root of unity, this function returns `nothing`.
 
 ```julia
 x = exp_alg(3//7)
@@ -106,7 +106,7 @@ y = log_alg(x)
 assert(y == 3//7)
 ```
 
-There are also inverse trigonometric functions `acos_alg` and `asin_alg`. If the input is a trigonometric number, the output will be a rational fraction of π, otherwise the return value will be `Nothing`. These functions are useful when doing various geometric computations.
+There are also inverse trigonometric functions `acos_alg` and `asin_alg`. If the input is a trigonometric number, the output will be a rational fraction of π, otherwise the return value will be `nothing`. These functions are useful when doing various geometric computations.
 
 ```julia
 x = sqrt(AlgebraicNumber(3))/2
