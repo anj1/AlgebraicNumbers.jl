@@ -112,7 +112,7 @@ end
 function test_log_alg()
 	@test log_alg(exp_alg(1//9)) == 1//9
 
-	@test log_alg(AlgebraicNumber(2)) == Nothing
+	@test isnothing(log_alg(AlgebraicNumber(2)))
 end
 
 function test_trig_alg()
@@ -122,8 +122,8 @@ function test_trig_alg()
 	@test acos_alg(AlgebraicNumber(1)) == 0//1
 	@test asin_alg(AlgebraicNumber(1)) == 1//2
 
-	@test asin_alg(AlgebraicNumber(3//2)) == Nothing
-	@test acos_alg(AlgebraicNumber(3//2)) == Nothing
+	@test isnothing(asin_alg(AlgebraicNumber(3//2)))
+	@test isnothing(acos_alg(AlgebraicNumber(3//2)))
 end 
 
 function totient(x::T) where T <: Integer 
