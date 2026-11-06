@@ -1,14 +1,14 @@
 name = "AlgebraicNumbers"
 uuid = "e86d093a-a386-599e-b7c7-df0420c8bcba"
-authors = ["Al Nejati", "Felix Kastner"]
 version = "0.1.11"
+authors = ["Al Nejati", "Felix Kastner"]
 
 [deps]
 Nemo = "2edaba10-b0f1-5616-af89-8c11ac63239a"
 PolynomialRoots = "3a141323-8675-5d76-9d11-e1df1406c778"
 
 [compat]
-Nemo = "0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47"
+Nemo = "0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47, 0.57"
 PolynomialRoots = "0.2, 1.0"
 julia = "1.6"
 
