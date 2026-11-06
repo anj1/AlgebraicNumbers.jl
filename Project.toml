@@ -1,6 +1,6 @@
 name = "AlgebraicNumbers"
 uuid = "e86d093a-a386-599e-b7c7-df0420c8bcba"
-version = "0.1.11"
+version = "0.1.12"
 authors = ["Al Nejati", "Felix Kastner"]
 
 [deps]
