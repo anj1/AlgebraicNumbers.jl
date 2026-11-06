@@ -45,7 +45,7 @@ AlgebraicNumber(x::Complex) =
 
 
 function poly_from_coeff(a)
-	R,x=polynomial_ring(Nemo.FlintZZ,"x")
+	R,x=polynomial_ring(Nemo.ZZ,"x")
 	sum([a[i]*x^(i-1) for i=1:length(a)])
 end
 
@@ -111,8 +111,8 @@ function simplify(an::AlgebraicNumber)
 	end
 
 	# Otherwise, factor out.
-	R, x = polynomial_ring(Nemo.FlintZZ, "x")
-	p = R(map(Nemo.FlintZZ, an.coeff))
+	R, x = polynomial_ring(Nemo.ZZ, "x")
+	p = R(map(Nemo.ZZ, an.coeff))
 	fctr_dict = Nemo.factor(p)
 	#fctrs = keys(fctr_dict)
 	fctrs = [p for (p,e) in fctr_dict]

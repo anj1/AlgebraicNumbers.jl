@@ -7,8 +7,8 @@
 derivative(c::Vector) = c[2:end] .* (1:length(c)-1)
 
 function polyinv(coeffs::Vector, n)
-	R, x = Nemo.power_series_ring(Nemo.FlintQQ, n, "x")
-	a = R(map(Nemo.FlintQQ, coeffs), length(coeffs), n, 0)
+	R, x = Nemo.power_series_ring(Nemo.QQ, n, "x")
+	a = R(map(Nemo.QQ, coeffs), length(coeffs), n, 0)
 	ai = inv(a)
 	return Nemo.QQFieldElem[coeff(ai,i) for i=0:n-1]
 end
@@ -25,8 +25,8 @@ function to_newton(coeffs::Vector{BigInt},n,R,x)
 	b_cfs = reverse(coeffs)
 
 	# initialize power series polynomials
-	a = R(map(Nemo.FlintQQ, a_cfs))
-	b = R(map(Nemo.FlintQQ, b_cfs))
+	a = R(map(Nemo.QQ, a_cfs))
+	b = R(map(Nemo.QQ, b_cfs))
 	b0 = R(polyinv(b_cfs, n))
 
 	c  = truncate(a*b0, d)
@@ -74,7 +74,7 @@ end
 function composed_product(p::Vector{BigInt},q::Vector{BigInt})
 	# compute newton series
 	n = (length(p)-1)*(length(q)-1)+1
-	R, x = Nemo.polynomial_ring(Nemo.FlintQQ, "x")
+	R, x = Nemo.polynomial_ring(Nemo.QQ, "x")
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 
@@ -89,13 +89,13 @@ end
 function composed_sum(p::Vector{BigInt},q::Vector{BigInt})
 	# compute newton series
 	n = (length(p)-1)*(length(q)-1)+1
-	R, x = Nemo.polynomial_ring(Nemo.FlintQQ, "x")
+	R, x = Nemo.polynomial_ring(Nemo.QQ, "x")
 	a = to_newton(p,n,R,x)
 	b = to_newton(q,n,R,x)
 
 	# exp series
-	ee  = R([Nemo.FlintQQ(1//factorial(BigInt(i))) for i=0:n])
-	eei = R([Nemo.FlintQQ(   factorial(BigInt(i))) for i=0:n])
+	ee  = R([Nemo.QQ(1//factorial(BigInt(i))) for i=0:n])
+	eei = R([Nemo.QQ(   factorial(BigInt(i))) for i=0:n])
 
 	# multiply newton series and invert
 	m = mullow(hadm(a,ee,R),hadm(b,ee,R),n+1)
